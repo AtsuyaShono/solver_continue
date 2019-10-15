@@ -1,8 +1,14 @@
 #include "solver.hpp"
 
+<<<<<<< HEAD
 //#ifdef _OPENMP
 //omp_set_num_threads(8);
 //#endif
+=======
+#ifdef _OPENMP
+omp_set_num_threads(8);
+#endif
+>>>>>>> ae9f7f4bbbddaf5fe687b4f364cbb031068f5e05
 
 //メイン関数
 int main(int argc, char **filename){  //実行コマンド　./a.out 入力ファイル　出力ファイル
