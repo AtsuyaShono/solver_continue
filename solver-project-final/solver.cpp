@@ -1,5 +1,9 @@
 #include "solver.hpp"
 
+//#ifdef _OPENMP
+//omp_set_num_threads(8);
+//#endif
+
 //メイン関数
 int main(int argc, char **filename){  //実行コマンド　./a.out 入力ファイル　出力ファイル
         //filename[0]:実行ファイル名　1:入力ファイル名 2:出力ファイル名
