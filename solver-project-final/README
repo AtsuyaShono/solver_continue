@@ -1,0 +1,33 @@
+Name
+====
+Solver for System-level FPGA Routing with Timing Division Multiplexing Technique
+
+Overview
+It's Solver for ICCAD 2019 problemB "System-level FPGA Routing with Timing Division Multiplexing Technique"
+
+## Usage
+command: ./cada0122
+option1: inputfile path
+option2: outputfile path
+
+example
+./cada0122 synopsys01.txt 01_out.txt
+
+## Work
+First, read information (FPGA, wire, connection, connection group) from input file.
+Next search the route, the connection path and the TDM ratio are outputs to the output file.
+
+## Compile
+g++ -o cada0122 -std=c++11 -Ofast -march=native solver.cpp -fopenmp
+
+## Dependency
+gcc version 4.8.5~
+needs fopenmp
+
+## Evaluation
+https://github.com/jacky860226/ICCAD2019_B_evaluator?fbclid=IwAR1sRmep7HMS0leRv_GZdXIRJ36oyEu3v2B5_yfc4BA3Pp9YMg2iDtfyPjA
+
+## Author
+Team name kyu
+Team ID cada0122
+Atsuya Shono in University of Kitakyushu department of Information and Media Engineering
