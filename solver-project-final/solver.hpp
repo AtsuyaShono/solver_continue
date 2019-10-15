@@ -12,7 +12,11 @@ using namespace std;
 //#include "RCP.cpp" //逆数の配列ファイル
 
 #ifdef _OPENMP
+<<<<<<< HEAD
 omp_set_num_threads(8);
+=======
+omp_set_num_threads(4);
+>>>>>>> 094892456ea08ea00b4e88386e5ccc7535733311
 #endif
 
 #define INF 1e+9
