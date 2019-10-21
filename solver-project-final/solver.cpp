@@ -321,7 +321,7 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 50)         //max_hisを一定周期でリセット
+                if(count >= 40)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
                                 N[i].max_his -= 30; //40回中30回以上最大グループに属していたならフラグは立ったまま
@@ -349,16 +349,16 @@ void calc_TDM(){
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * (float)1/digitBinary(E[i].used_net[j].second);
+                                                const int dumy = E[i].used_net[j].second * E[i].sum*0.1/(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
-                                                        if(!N[E[i].used_net[j].first].max_once) {
-                                                                N[E[i].used_net[j].first].cost += 1.5*dumy;     //ネットのコスト更新
-                                                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
-                                                        }
-                                                        else{
-                                                                N[E[i].used_net[j].first].cost += 1.2*dumy;     //ネットのコスト更新
-                                                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
-                                                        }
+                                                        //if(!N[E[i].used_net[j].first].max_once) {
+                                                        //        N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
+                                                        //        E[i].used_net[j].second += 3.0*dumy;     //TDM変更
+                                                        //}
+                                                        //else{
+                                                        N[E[i].used_net[j].first].cost += 1.5*dumy;             //ネットのコスト更新
+                                                        E[i].used_net[j].second += 1.5*dumy;           //TDM変更
+                                                        //}
                                                 }
                                                 else {
                                                         N[E[i].used_net[j].first].cost += dumy;           //ネットのコスト更新
