@@ -351,14 +351,14 @@ void calc_TDM(){
                                                 debug = false;                 //改善できるので非常用の計算回避
                                                 const int dumy = E[i].used_net[j].second * E[i].sum*0.1*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
-                                                        if(!N[E[i].used_net[j].first].max_once) {
-                                                                N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
-                                                                E[i].used_net[j].second += 3.0*dumy;     //TDM変更
-                                                        }
-                                                        else{
-                                                                N[E[i].used_net[j].first].cost += 2.0*dumy;     //ネットのコスト更新
-                                                                E[i].used_net[j].second += 2.0*dumy;   //TDM変更
-                                                        }
+                                                        //if(!N[E[i].used_net[j].first].max_once) {
+                                                        //        N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
+                                                        //        E[i].used_net[j].second += 3.0*dumy;     //TDM変更
+                                                        //}
+                                                        //else{
+                                                        N[E[i].used_net[j].first].cost += 3.0*dumy;             //ネットのコスト更新
+                                                        E[i].used_net[j].second += 3.0*dumy;           //TDM変更
+                                                        //}
                                                 }
                                                 else {
                                                         N[E[i].used_net[j].first].cost += dumy;           //ネットのコスト更新
