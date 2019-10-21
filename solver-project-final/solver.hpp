@@ -67,7 +67,7 @@ bool max; //スコアとなるグループに属している場合true
 int max_his; //過去何回かで何回以上最大グループに属している場合正の値
 bool max_once; //過去に一度でも最大グループになっていたらtrue
 
-net() : cost(0){
+net() : cost(0),max_his(1){
 }
 
 void sum_cost();   //総コスト計算
@@ -156,6 +156,40 @@ inline double rcp(const int num){
         //}
         //else
         return (double)1/num;
+}
+
+inline int
+digitBinary(int n)
+{
+        if (n < 100000) {
+                if (n < 1000) {
+                        if (n < 10)
+                                return 1;
+                        else if (n < 100)
+                                return 2;
+                        else
+                                return 3;
+                } else {
+                        if (n < 10000)
+                                return 4;
+                        else
+                                return 5;
+                }
+        } else {
+                if (n < 10000000) {
+                        if (n < 1000000)
+                                return 6;
+                        else
+                                return 7;
+                } else {
+                        if (n < 100000000)
+                                return 8;
+                        else if (n < 1000000000)
+                                return 9;
+                        else
+                                return 10;
+                }
+        }
 }
 
 ////////////

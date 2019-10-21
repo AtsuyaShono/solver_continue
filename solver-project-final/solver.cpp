@@ -139,8 +139,8 @@ void fileload(char *inputfile){ //入力
                 }
         }
 
-        paramator = (double)targets / nets_in_group; //ファイルサイズによって変えるパラメータ
-        paramator_x = (double)1 / paramator;
+        //paramator = (double)targets / nets_in_group; //ファイルサイズによって変えるパラメータ
+        //paramator_x = (double)1 / paramator;
 
 /*
         cout << "\r" << "File Load... Success!" << endl;
@@ -249,20 +249,12 @@ void routing(){ //経路探索
                         k = v;         //到着地点のsourceノードから枝を逆走して格納していく
                         while(1) {
                                 included_sig[k] = true;         //信号を含むことになるノードにフラグを立てる
-                                if(k == N[id].source_sig) break;         //探索を始めた元のノードに戻ってくれば終了
-                                if(penalty_cost[route[k]] == 0) break; //コストが0になっているところはすでに訪問済みなので終了
-                                else {
-                                        T.emplace_back(route[k]);         //解の枝を記憶
-                                }
+                                if(k == N[id].source_sig || penalty_cost[route[k]] == 0) break;         //探索を始めた元のノードに戻ってくれば終了 //コストが0になっているところはすでに訪問済みなので終了
+                                else T.emplace_back(route[k]);         //解の枝を記憶
                                 penalty_cost[route[k]] = 0; //もう使っているので次からコストは0
-                                if(E[route[k]].node_id1 != k) {
-                                        k = E[route[k]].node_id1;         //枝の接続先を記憶
-                                }
-                                else {
-                                        k = E[route[k]].node_id2;         //枝の接続先を記憶
-                                }
+                                if(E[route[k]].node_id1 != k) k = E[route[k]].node_id1;         //枝の接続先を記憶
+                                else k = E[route[k]].node_id2;         //枝の接続先を記憶
                         }
-
                 }
 
                 for(int loop = 0; loop < T.size(); ++loop) {
@@ -279,14 +271,14 @@ void calc_TDM(){
         int i,j;
         queue<edge> q_edge;
 
-        float a = 2 + paramator_x * 0.5;         //使ったネットの桁数に応じてTDM_sumがこの値までだいたいで計算する だいたいこんなんでうまくいった
+        //float a = 2 + paramator_x * 0.5;         //使ったネットの桁数に応じてTDM_sumがこの値までだいたいで計算する だいたいこんなんでうまくいった
         int top = nw * 0.01;         //グループコスト順に上からtop分のネットをmax,max_hisと設定する
         int count = 0; //max_his用のカウント
         int top_g = 0; //上位のグループの数
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,2});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,10});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
@@ -329,7 +321,7 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 40)         //max_hisを一定周期でリセット
+                if(count >= 50)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
                                 N[i].max_his -= 30; //40回中30回以上最大グループに属していたならフラグは立ったまま
@@ -347,30 +339,42 @@ void calc_TDM(){
                                 q_edge.push(E[i]);         //もう一度計算するためpush
                                 bool debug = true;         //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
 
-                                /*
-                                   cout << "\r" << "Roughly Optimizing TDM...  " << q_edge.size() << " Remaining Edges , Edge ID ";
-                                   cout << setw(5) << setfill(' ') << i << "'s TDM ratio is " << fixed << setprecision(3) << E[i].sum << " ";                //不要
-                                   cout << "Maximum total TDM ratio of all net groups is: " << G[ng-1].cost << "          ";
-                                 */
 
-                                if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
-                                        for(j = 0; j < E[i].used_net.size(); ++j) {
-                                                if(!N[E[i].used_net[j].first].max) {                 //最大グループのネットではない場合
-                                                        debug = false;         //改善できるので非常用の計算回避
-                                                        const int dumy = E[i].used_net[j].second >> 1;
-                                                        N[E[i].used_net[j].first].cost += dumy;         //ネットのコスト更新
-                                                        E[i].used_net[j].second += dumy;         //TDM変更
+                                cout << "\r" << "Roughly Optimizing TDM...  " << q_edge.size() << " Remaining Edges , Edge ID ";
+                                cout << setw(5) << setfill(' ') << i << "'s TDM ratio is " << fixed << setprecision(3) << E[i].sum << " ";                   //不要
+                                cout << "Maximum total TDM ratio of all net groups is: " << G[ng-1].cost << "          ";
+
+
+                                //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
+                                for(j = 0; j < E[i].used_net.size(); ++j) {
+                                        if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
+                                                debug = false;                 //改善できるので非常用の計算回避
+                                                const int dumy = E[i].used_net[j].second * (float)1/digitBinary(E[i].used_net[j].second);
+                                                if(N[E[i].used_net[j].first].max_his == 0) {
+                                                        if(!N[E[i].used_net[j].first].max_once) {
+                                                                N[E[i].used_net[j].first].cost += 1.5*dumy;     //ネットのコスト更新
+                                                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
+                                                        }
+                                                        else{
+                                                                N[E[i].used_net[j].first].cost += 1.2*dumy;     //ネットのコスト更新
+                                                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
+                                                        }
                                                 }
-                                        }
-                                        if(debug) {         //非常事態の計算
-                                                for(j = 0; j < E[i].used_net.size(); ++j) {
-                                                        const int dumy = E[i].used_net[j].second >> 1;
-                                                        N[E[i].used_net[j].first].cost += dumy;         //ネットのコスト更新
-                                                        E[i].used_net[j].second += dumy;         //TDM変更
+                                                else {
+                                                        N[E[i].used_net[j].first].cost += dumy;           //ネットのコスト更新
+                                                        E[i].used_net[j].second += dumy;           //TDM変更
                                                 }
                                         }
                                 }
-                                else{
+                                if(debug) {                 //非常事態の計算
+                                        for(j = 0; j < E[i].used_net.size(); ++j) {
+                                                const int dumy = E[i].used_net[j].second >> 1;
+                                                N[E[i].used_net[j].first].cost += dumy;                 //ネットのコスト更新
+                                                E[i].used_net[j].second += dumy;                 //TDM変更
+                                        }
+                                }
+                                //}
+                                /*else{
                                         for(j = 0; j < E[i].used_net.size(); ++j) {
                                                 if(!N[E[i].used_net[j].first].max) {                 //最大グループのネットではない場合
                                                         debug = false;         ////改善できるので非常用の計算回避
@@ -433,7 +437,7 @@ void calc_TDM(){
                                                         N[E[i].used_net[j].first].cost += 2;
                                                 }
                                         }
-                                }
+                                   }*/
                         }
                 }
                 if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
