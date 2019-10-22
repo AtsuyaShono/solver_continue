@@ -349,7 +349,7 @@ void calc_TDM(){
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * E[i].sum*0.1*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
+                                                const int dumy = E[i].used_net[j].second * E[i].sum*0.01*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
                                                         //if(!N[E[i].used_net[j].first].max_once) {
                                                         //        N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
