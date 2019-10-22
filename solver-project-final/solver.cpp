@@ -321,7 +321,7 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 40)         //max_hisを一定周期でリセット
+                if(count >= 50)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
                                 N[i].max_his -= 30; //40回中30回以上最大グループに属していたならフラグは立ったまま
@@ -349,16 +349,16 @@ void calc_TDM(){
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * (0.5 + E[i].sum*0.01*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)))) + 2;
+                                                const int dumy = E[i].used_net[j].second * (E[i].sum*0.1*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)))) + 2;
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
-                                                        //if(!N[E[i].used_net[j].first].max_once) {
-                                                        //        N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
-                                                        //        E[i].used_net[j].second += 3.0*dumy;     //TDM変更
-                                                        //}
-                                                        //else{
-                                                        N[E[i].used_net[j].first].cost += 1.5*dumy;             //ネットのコスト更新
-                                                        E[i].used_net[j].second += 1.5*dumy;           //TDM変更
-                                                        //}
+                                                        if(!N[E[i].used_net[j].first].max_once) {
+                                                                N[E[i].used_net[j].first].cost += 1.5*dumy;     //ネットのコスト更新
+                                                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
+                                                        }
+                                                        else{
+                                                                N[E[i].used_net[j].first].cost += 1.2*dumy;     //ネットのコスト更新
+                                                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
+                                                        }
                                                 }
                                                 else {
                                                         N[E[i].used_net[j].first].cost += dumy;           //ネットのコスト更新
@@ -373,92 +373,10 @@ void calc_TDM(){
                                                 E[i].used_net[j].second += dumy;                 //TDM変更
                                         }
                                 }
-                                //}
-                                /*else{
-                                        for(j = 0; j < E[i].used_net.size(); ++j) {
-                                                if(!N[E[i].used_net[j].first].max) {                 //最大グループのネットではない場合
-                                                        debug = false;         ////改善できるので非常用の計算回避
-
-                                                        if(N[E[i].used_net[j].first].max_his == 0) {
-                                                                if(!N[E[i].used_net[j].first].max_once) { //一回も最大グループのネットになってない場合
-                                                                        if(E[i].used_net[j].second > 3000) {     //もしコストが1000を超えていれば割合で増やしていく //やった方が正確
-                                                                                const int dumy = E[i].used_net[j].second * 0.0025;
-                                                                                E[i].used_net[j].second += dumy; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += dumy; //ネットのコスト更新
-                                                                        }
-                                                                        else if(E[i].used_net[j].second > 300) { //もしコストが100を超えていれば割合で増やしていく //最低限
-                                                                                const int dumy = E[i].used_net[j].second * 0.025;
-                                                                                E[i].used_net[j].second += dumy; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += dumy; //ネットのコスト更新
-                                                                        }
-                                                                        else {
-                                                                                E[i].used_net[j].second += 2; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += 2; //ネットのコスト更新
-                                                                        }
-                                                                }
-                                                                else {
-                                                                        if(E[i].used_net[j].second > 2000) {                   //もしコストが1000を超えていれば割合で増やしていく //やった方が正確
-                                                                                const int dumy = E[i].used_net[j].second * 0.002;
-                                                                                E[i].used_net[j].second += dumy; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += dumy; //ネットのコスト更新
-                                                                        }
-                                                                        else if(E[i].used_net[j].second > 200) { //もしコストが100を超えていれば割合で増やしていく //最低限
-                                                                                const int dumy = E[i].used_net[j].second * 0.02;
-                                                                                E[i].used_net[j].second += dumy; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += dumy; //ネットのコスト更新
-                                                                        }
-                                                                        else {
-                                                                                E[i].used_net[j].second += 2; //TDM変更
-                                                                                N[E[i].used_net[j].first].cost += 2; //ネットのコスト更新
-                                                                        }
-                                                                }
-                                                        }
-                                                        else {
-                                                                if(E[i].used_net[j].second > 2000) {                                 //もしコストが1000を超えていれば割合で増やしていく //やった方が正確
-                                                                        const int dumy = E[i].used_net[j].second * 0.001;
-                                                                        E[i].used_net[j].second += dumy;         //TDM変更
-                                                                        N[E[i].used_net[j].first].cost += dumy;         //ネットのコスト更新
-                                                                }
-                                                                else if(E[i].used_net[j].second > 200) {            //もしコストが100を超えていれば割合で増やしていく //最低限
-                                                                        const int dumy = E[i].used_net[j].second * 0.01;
-                                                                        E[i].used_net[j].second += dumy;         //TDM変更
-                                                                        N[E[i].used_net[j].first].cost += dumy;         //ネットのコスト更新
-                                                                }
-                                                                else {
-                                                                        E[i].used_net[j].second += 2;         //TDM変更
-                                                                        N[E[i].used_net[j].first].cost += 2;         //ネットのコスト更新
-                                                                }
-                                                        }
-                                                }
-                                        }
-                                        if(debug) {         //非常事態の計算
-                                                for(j = 0; j < E[i].used_net.size(); ++j) {
-                                                        E[i].used_net[j].second += 2;
-                                                        N[E[i].used_net[j].first].cost += 2;
-                                                }
-                                        }
-                                   }*/
                         }
                 }
                 if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
         }
-        /*
-           cout << "\r" << "Roughly Optimize TDM...  Complete!" << endl;
-         */
-
-        //もし制約違反だとしてもここで直す
-        //#pragma omp parallel for
-        //for(i = 0; i < ne; ++i) {
-        //        //E[i].create_evennum(); //偶数にする
-        //        E[i].sum_forrestriction();  //TDM逆数総和の計算
-        //        if(E[i].sum > 1) { //制約を満たしていなかったので直す
-        //                cout << "Edge id " << i << "'s restriction is error, fixing TDM ratio";
-        //                while(E[i].sum > 1) {
-        //                        E[i].increase_TDM(); //増やす
-        //                        E[i].sum_forrestriction();  //TDM逆数総和の計算
-        //                }
-        //        }
-        //}
 
         for(i = 0; i < nw; ++i)
                 N[i].T.clear();         //解をクリア

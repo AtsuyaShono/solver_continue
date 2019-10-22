@@ -24,3 +24,15 @@ echo "
 synopsys06.txt
 "
 ./evaluaterFast testcases/synopsys06.txt outputs/06_out.txt
+echo "
+synopsyshidden01.txt
+"
+./evaluaterFast testcases/synopsyshidden01.txt outputs/h01_out.txt
+echo "
+synopsyshidden02.txt
+"
+./evaluaterFast testcases/synopsyshidden02.txt outputs/h02_out.txt
+echo "
+synopsyshidden03.txt
+"
+./evaluaterFast testcases/synopsyshidden03.txt outputs/h03_out.txt
