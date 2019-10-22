@@ -278,7 +278,7 @@ void calc_TDM(){
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,10});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,100});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
@@ -349,7 +349,7 @@ void calc_TDM(){
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * E[i].sum*0.01*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
+                                                const int dumy = E[i].used_net[j].second * E[i].sum*0.1*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)));
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
                                                         //if(!N[E[i].used_net[j].first].max_once) {
                                                         //        N[E[i].used_net[j].first].cost += 3.0*dumy;     //ネットのコスト更新
