@@ -356,8 +356,8 @@ void calc_TDM(){
                                                         //        E[i].used_net[j].second += 3.0*dumy;     //TDM変更
                                                         //}
                                                         //else{
-                                                        N[E[i].used_net[j].first].cost += 3.0*dumy;             //ネットのコスト更新
-                                                        E[i].used_net[j].second += 3.0*dumy;           //TDM変更
+                                                        N[E[i].used_net[j].first].cost += 1.5*dumy;             //ネットのコスト更新
+                                                        E[i].used_net[j].second += 1.5*dumy;           //TDM変更
                                                         //}
                                                 }
                                                 else {
