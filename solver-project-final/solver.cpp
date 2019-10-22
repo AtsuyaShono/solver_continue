@@ -339,11 +339,11 @@ void calc_TDM(){
                                 q_edge.push(E[i]);         //もう一度計算するためpush
                                 bool debug = true;         //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
 
-
+/*
                                 cout << "\r" << "Roughly Optimizing TDM...  " << q_edge.size() << " Remaining Edges , Edge ID ";
                                 cout << setw(5) << setfill(' ') << i << "'s TDM ratio is " << fixed << setprecision(3) << E[i].sum << " ";                   //不要
                                 cout << "Maximum total TDM ratio of all net groups is: " << G[ng-1].cost << "          ";
-
+ */
 
                                 //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
