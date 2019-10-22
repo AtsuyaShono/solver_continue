@@ -278,7 +278,7 @@ void calc_TDM(){
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,100});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[i].cost});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
