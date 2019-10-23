@@ -295,6 +295,14 @@ void calc_TDM(){
                                 for(j = 0; j < G[ng-1-i].net_id.size(); ++j)
                                         N[G[ng-1-i].net_id[j]].unmax(); //最大グループ所属のネットフラグ初期化
 
+                        #pragma omp for
+                        for(i = 0; i < nw; ++i) N[i].cost = 0;
+
+                        #pragma omp for private(j)
+                        for(i = 0; i < ne; ++i)
+                                for(j = 0; j < E[i].used_net.size(); ++j)
+                                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                                   //ネットのコスト更新
+
                         //全グループのコスト計算
                         #pragma omp for
                         for(i = 0; i < ng - top_g; ++i)
@@ -346,26 +354,25 @@ void calc_TDM(){
  */
 
                                 //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
+                                #pragma omp parallel for
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
                                                 const int dumy = E[i].used_net[j].second * (E[i].sum*0.01*rcp((digitBinary(E[i].used_net[j].second)))) + 2;
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
                                                         if(!N[E[i].used_net[j].first].max_once) {
-                                                                N[E[i].used_net[j].first].cost += 1.5*dumy;     //ネットのコスト更新
                                                                 E[i].used_net[j].second += 1.5*dumy;     //TDM変更
                                                         }
                                                         else{
-                                                                N[E[i].used_net[j].first].cost += 1.2*dumy;     //ネットのコスト更新
                                                                 E[i].used_net[j].second += 1.2*dumy;   //TDM変更
                                                         }
                                                 }
                                                 else {
-                                                        N[E[i].used_net[j].first].cost += dumy;           //ネットのコスト更新
                                                         E[i].used_net[j].second += dumy;           //TDM変更
                                                 }
                                         }
                                 }
+
                                 if(debug) {                 //非常事態の計算
                                         for(j = 0; j < E[i].used_net.size(); ++j) {
                                                 const int dumy = E[i].used_net[j].second >> 1;
