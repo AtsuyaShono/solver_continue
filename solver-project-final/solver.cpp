@@ -278,7 +278,7 @@ void calc_TDM(){
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.001 + 10});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 10});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
@@ -321,10 +321,10 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 50)         //max_hisを一定周期でリセット
+                if(count >= 100)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 30; //40回中30回以上最大グループに属していたならフラグは立ったまま
+                                N[i].max_his -= 70; //40回中30回以上最大グループに属していたならフラグは立ったまま
                                 if(N[i].max_his < 0) N[i].max_his = 0;
                         }
                         count = 0; //リセット
