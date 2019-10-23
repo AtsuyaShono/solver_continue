@@ -271,7 +271,6 @@ void calc_TDM(){
         int i,j;
         queue<edge> q_edge;
 
-        //float a = 2 + paramator_x * 0.5;         //使ったネットの桁数に応じてTDM_sumがこの値までだいたいで計算する だいたいこんなんでうまくいった
         int top = nw * 0.01;         //グループコスト順に上からtop分のネットをmax,max_hisと設定する
         int count = 0; //max_his用のカウント
         int top_g = 0; //上位のグループの数
@@ -329,7 +328,7 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 500)         //max_hisを一定周期でリセット
+                if(count >= 400)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
                                 N[i].max_his -= 300; //40回中30回以上最大グループに属していたならフラグは立ったまま
