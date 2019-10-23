@@ -321,10 +321,10 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 100)         //max_hisを一定周期でリセット
+                if(count >= 200)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 70; //40回中30回以上最大グループに属していたならフラグは立ったまま
+                                N[i].max_his -= 150; //40回中30回以上最大グループに属していたならフラグは立ったまま
                                 if(N[i].max_his < 0) N[i].max_his = 0;
                         }
                         count = 0; //リセット
@@ -349,7 +349,7 @@ void calc_TDM(){
                                 for(j = 0; j < E[i].used_net.size(); ++j) {
                                         if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
                                                 debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * (E[i].sum*0.1*rcp(digitBinary(E[i].used_net[j].second)*(digitBinary(E[i].used_net[j].second)))) + 2;
+                                                const int dumy = E[i].used_net[j].second * (E[i].sum*0.01*rcp((digitBinary(E[i].used_net[j].second)))) + 2;
                                                 if(N[E[i].used_net[j].first].max_his == 0) {
                                                         if(!N[E[i].used_net[j].first].max_once) {
                                                                 N[E[i].used_net[j].first].cost += 1.5*dumy;     //ネットのコスト更新
