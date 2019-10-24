@@ -203,7 +203,7 @@ void edge::sum_forrestriction(){ //制約判定のためのTDM逆数の総和
 
 void edge::increase_TDM(){ // 非常事態の時、適当に増やす
 
-        if(sum > 1.0) {   //まだ制約を満たしていない場合
+        if(sum > 2.0) {   //まだ制約を満たしていない場合
                 bool debug = true;   //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
 
                 for(int i = 0; i < used_net.size(); ++i) {

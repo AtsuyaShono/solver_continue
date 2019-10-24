@@ -344,7 +344,7 @@ void calc_TDM(){
                         {
                                 i = q_edge.front().id; //TDM操作するedgeを記憶
                                 q_edge.pop(); //一旦消す
-                                if(E[i].sum > 1.0) q_edge.push(E[i]);
+                                if(E[i].sum > 2.0) q_edge.push(E[i]);
                         }
 
                         E[i].increase_TDM();
@@ -397,8 +397,8 @@ void calc_TDM(){
         //解（枝、TDM）代入
         for(i = 0; i < ne; ++i) {
                 for(j = 0; j < E[i].used_net.size(); ++j) {
-                        if(E[i].used_net[j].second&1) ++E[i].used_net[j].second;
-                        N[E[i].used_net[j].first].T.push_back({E[i].id,E[i].used_net[j].second});
+                        //if(E[i].used_net[j].second&1) ++E[i].used_net[j].second;
+                        N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
                 }
         }
 }
