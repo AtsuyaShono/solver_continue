@@ -5,6 +5,7 @@
 #include <queue>
 #include <algorithm>
 #include <vector>
+#include <math.h>
 #include <omp.h>
 
 using namespace std;
@@ -201,7 +202,36 @@ void edge::sum_forrestriction(){ //制約判定のためのTDM逆数の総和
 }
 
 void edge::increase_TDM(){ // 非常事態の時、適当に増やす
-        for(int i = 0; i < used_net.size(); ++i) used_net[i].second += 2;
+
+        if(sum > 1.0) {   //まだ制約を満たしていない場合
+                bool debug = true;   //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
+
+                for(int i = 0; i < used_net.size(); ++i) {
+                        if(!N[used_net[i].first].max) {                   //最大グループのネットではない場合
+                                debug = false;           //改善できるので非常用の計算回避
+                                const int dumy = used_net[i].second * (sum-1) * 0.1 * rcp((digitBinary(used_net[i].second))) + 2;
+                                if(N[used_net[i].first].max_his == 0) {
+                                        if(!N[used_net[i].first].max_once) {
+                                                used_net[i].second += 1.5*dumy; //TDM変更
+                                        }
+                                        else{
+                                                used_net[i].second += 1.2*dumy; //TDM変更
+                                        }
+                                }
+                                else {
+                                        used_net[i].second += dumy;     //TDM変更
+                                }
+                        }
+                }
+
+                if(debug) {           //非常事態の計算
+                        for(int i = 0; i < used_net.size(); ++i) {
+                                const int dumy = used_net[i].second >> 1;
+                                used_net[i].second += dumy;           //TDM変更
+                        }
+                }
+
+        }
 }
 
 void net::sum_cost(){ //コスト計算

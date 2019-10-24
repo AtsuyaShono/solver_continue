@@ -328,23 +328,30 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 400)         //max_hisを一定周期でリセット
+                if(count >= 200)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 300; //40回中30回以上最大グループに属していたならフラグは立ったまま
+                                N[i].max_his -= 150; //40回中30回以上最大グループに属していたならフラグは立ったまま
                                 if(N[i].max_his < 0) N[i].max_his = 0;
                         }
                         count = 0; //リセット
                 }
 
                 int loop = q_edge.size();
+                #pragma omp parallel for
                 for(int count = 0; count < loop; ++count) {
-                        i = q_edge.front().id;         //TDM操作するedgeを記憶
-                        q_edge.pop();         //一旦消す
+                  #pragma omp critical
+                        {
+                                i = q_edge.front().id; //TDM操作するedgeを記憶
+                                q_edge.pop(); //一旦消す
+                                if(E[i].sum > 1.0) q_edge.push(E[i]);
+                        }
 
-                        if(E[i].sum > 1.0) {         //まだ制約を満たしていない場合
-                                q_edge.push(E[i]);         //もう一度計算するためpush
-                                bool debug = true;         //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
+                        E[i].increase_TDM();
+
+                        //if(E[i].sum > 1.0) {         //まだ制約を満たしていない場合
+                        //        q_edge.push(E[i]);         //もう一度計算するためpush
+                        //        bool debug = true;         //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
 
 /*
                                 cout << "\r" << "Roughly Optimizing TDM...  " << q_edge.size() << " Remaining Edges , Edge ID ";
@@ -352,34 +359,34 @@ void calc_TDM(){
                                 cout << "Maximum total TDM ratio of all net groups is: " << G[ng-1].cost << "          ";
  */
 
-                                //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
-                                #pragma omp parallel for
-                                for(j = 0; j < E[i].used_net.size(); ++j) {
-                                        if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
-                                                debug = false;                 //改善できるので非常用の計算回避
-                                                const int dumy = E[i].used_net[j].second * ((E[i].sum-1)*0.1*rcp((digitBinary(E[i].used_net[j].second)))) + 2;
-                                                if(N[E[i].used_net[j].first].max_his == 0) {
-                                                        if(!N[E[i].used_net[j].first].max_once) {
-                                                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
-                                                        }
-                                                        else{
-                                                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
-                                                        }
-                                                }
-                                                else {
-                                                        E[i].used_net[j].second += dumy;           //TDM変更
-                                                }
-                                        }
-                                }
+                        //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
+                        //#pragma omp parallel for
+                        //for(j = 0; j < E[i].used_net.size(); ++j) {
+                        //        if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
+                        //                debug = false;                 //改善できるので非常用の計算回避
+                        //                const int dumy = E[i].used_net[j].second * (E[i].sum-1) * 0.01 + 2;
+                        //                if(N[E[i].used_net[j].first].max_his == 0) {
+                        //                        if(!N[E[i].used_net[j].first].max_once) {
+                        //                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
+                        //                        }
+                        //                        else{
+                        //                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
+                        //                        }
+                        //                }
+                        //                else {
+                        //                        E[i].used_net[j].second += dumy;           //TDM変更
+                        //                }
+                        //        }
+                        //}
 
-                                if(debug) {                 //非常事態の計算
-                                        for(j = 0; j < E[i].used_net.size(); ++j) {
-                                                const int dumy = E[i].used_net[j].second >> 1;
-                                                N[E[i].used_net[j].first].cost += dumy;                 //ネットのコスト更新
-                                                E[i].used_net[j].second += dumy;                 //TDM変更
-                                        }
-                                }
-                        }
+                        //if(debug) {                 //非常事態の計算
+                        //        for(j = 0; j < E[i].used_net.size(); ++j) {
+                        //                const int dumy = E[i].used_net[j].second >> 1;
+                        //                N[E[i].used_net[j].first].cost += dumy;                 //ネットのコスト更新
+                        //                E[i].used_net[j].second += dumy;                 //TDM変更
+                        //        }
+                        //}
+                        //}
                 }
                 if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
         }
