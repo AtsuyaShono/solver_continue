@@ -35,7 +35,7 @@ int node_id1;         //接続されているFPGAid
 int node_id2;         //接続されているFPGAid
 
 int cost;   //TDM比
-vector<pair<int, int> > used_net; //枝を使ったネットid first:id second :cost
+vector<pair<unsigned int, unsigned int> > used_net; //枝を使ったネットid first:id second :cost
 double sum; //各ネットの1/TDMの合計
 
 edge() : cost(0) {
@@ -62,7 +62,7 @@ vector<int> target_sig;         //送信先node
 
 int priority; //ルーティングの優先順位、高い方から先にルーティングする
 int cost;   //最終的なネットのTDM
-vector<pair<int, int> > T;   //ダイクストラ用の最短経路edgeid first:edgeid,second:TDM
+vector<pair<unsigned int, unsigned int> > T;   //ダイクストラ用の最短経路edgeid first:edgeid,second:TDM
 
 bool max; //スコアとなるグループに属している場合true
 int max_his; //過去何回かで何回以上最大グループに属している場合正の値
