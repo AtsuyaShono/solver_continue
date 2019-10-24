@@ -328,10 +328,10 @@ void calc_TDM(){
                 top_g = i; //最大のグループの数
 
                 ++count; //何周したか
-                if(count >= 200)         //max_hisを一定周期でリセット
+                if(count >= 10)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 150; //40回中30回以上最大グループに属していたならフラグは立ったまま
+                                N[i].max_his -= 3; //40回中30回以上最大グループに属していたならフラグは立ったまま
                                 if(N[i].max_his < 0) N[i].max_his = 0;
                         }
                         count = 0; //リセット
