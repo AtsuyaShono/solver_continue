@@ -34,7 +34,7 @@ int id;         //辺のid
 int node_id1;         //接続されているFPGAid
 int node_id2;         //接続されているFPGAid
 
-int cost;   //TDM比
+unsigned int cost;   //TDM比
 vector<pair<unsigned int, unsigned int> > used_net; //枝を使ったネットid first:id second :cost
 double sum; //各ネットの1/TDMの合計
 
@@ -60,8 +60,8 @@ int id;         //ネットid
 int source_sig;         //送信元nodeからの信号
 vector<int> target_sig;         //送信先node
 
-int priority; //ルーティングの優先順位、高い方から先にルーティングする
-int cost;   //最終的なネットのTDM
+unsigned int priority; //ルーティングの優先順位、高い方から先にルーティングする
+unsigned int cost;   //最終的なネットのTDM
 vector<pair<unsigned int, unsigned int> > T;   //ダイクストラ用の最短経路edgeid first:edgeid,second:TDM
 
 bool max; //スコアとなるグループに属している場合true
@@ -89,7 +89,7 @@ public:
 int id;         //ネットグループid
 vector<int> net_id;         //ネットid
 
-long cost;   //グループの総TDM
+unsigned int cost;   //グループの総TDM
 
 group() : cost(0){
 }
@@ -212,10 +212,10 @@ void edge::increase_TDM(){ // 非常事態の時、適当に増やす
                                 const int dumy = used_net[i].second * (sum-1) * 0.1 * rcp((digitBinary(used_net[i].second))) + 2;
                                 if(N[used_net[i].first].max_his == 0) {
                                         if(!N[used_net[i].first].max_once) {
-                                                used_net[i].second += 1.5*dumy; //TDM変更
+                                                used_net[i].second += 2.0*dumy; //TDM変更
                                         }
                                         else{
-                                                used_net[i].second += 1.2*dumy; //TDM変更
+                                                used_net[i].second += 1.5*dumy; //TDM変更
                                         }
                                 }
                                 else {
