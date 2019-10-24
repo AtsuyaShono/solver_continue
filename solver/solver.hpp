@@ -5,7 +5,7 @@
 #include <queue>
 #include <algorithm>
 #include <vector>
-#include <math.h>
+#include <cmath>
 #include <omp.h>
 
 using namespace std;
