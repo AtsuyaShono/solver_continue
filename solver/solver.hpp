@@ -131,8 +131,8 @@ vector<group> G; //ネットグループの集合
 float paramator = 1.0;
 float paramator_x = 1.0;
 
-long max_TDM = 0; //現在時点のスコア
-long max_g = 0; //スコアとなっているグループ
+unsigned max_TDM = 0; //現在時点のスコア
+unsigned max_g = 0; //スコアとなっているグループ
 
 long targets = 0;
 long nets_in_group = 0;
@@ -209,7 +209,7 @@ void edge::increase_TDM(){ // 非常事態の時、適当に増やす
                 for(int i = 0; i < used_net.size(); ++i) {
                         if(!N[used_net[i].first].max) {                   //最大グループのネットではない場合
                                 debug = false;           //改善できるので非常用の計算回避
-                                const int dumy = used_net[i].second * (sum-1) * 0.1 * rcp((digitBinary(used_net[i].second))) + 2;
+                                const unsigned int dumy = used_net[i].second * (sum-1) * 0.1 * rcp((digitBinary(used_net[i].second))) + 2;
                                 if(N[used_net[i].first].max_his == 0) {
                                         if(!N[used_net[i].first].max_once) {
                                                 used_net[i].second += 2.0*dumy; //TDM変更
