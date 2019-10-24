@@ -131,8 +131,8 @@ vector<group> G; //ネットグループの集合
 float paramator = 1.0;
 float paramator_x = 1.0;
 
-unsigned max_TDM = 0; //現在時点のスコア
-unsigned max_g = 0; //スコアとなっているグループ
+unsigned int max_TDM = 0; //現在時点のスコア
+unsigned int max_g = 0; //スコアとなっているグループ
 
 long targets = 0;
 long nets_in_group = 0;
