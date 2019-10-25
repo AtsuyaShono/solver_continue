@@ -277,7 +277,7 @@ void calc_TDM(){
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 10});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.1 + 10});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
@@ -346,47 +346,7 @@ void calc_TDM(){
                                 q_edge.pop(); //一旦消す
                                 if(E[i].sum > 2.0) q_edge.push(E[i]);
                         }
-
                         E[i].increase_TDM();
-
-                        //if(E[i].sum > 1.0) {         //まだ制約を満たしていない場合
-                        //        q_edge.push(E[i]);         //もう一度計算するためpush
-                        //        bool debug = true;         //もし全てのネットが最大グループで計算が進まない時に計算を実行するためのフラグ
-
-/*
-                                cout << "\r" << "Roughly Optimizing TDM...  " << q_edge.size() << " Remaining Edges , Edge ID ";
-                                cout << setw(5) << setfill(' ') << i << "'s TDM ratio is " << fixed << setprecision(3) << E[i].sum << " ";                   //不要
-                                cout << "Maximum total TDM ratio of all net groups is: " << G[ng-1].cost << "          ";
- */
-
-                        //if(E[i].sum > a) {                 //aまでは大まかに計算、早くするため　変更可能　aは大きい方が正確
-                        //#pragma omp parallel for
-                        //for(j = 0; j < E[i].used_net.size(); ++j) {
-                        //        if(!N[E[i].used_net[j].first].max) {                         //最大グループのネットではない場合
-                        //                debug = false;                 //改善できるので非常用の計算回避
-                        //                const int dumy = E[i].used_net[j].second * (E[i].sum-1) * 0.01 + 2;
-                        //                if(N[E[i].used_net[j].first].max_his == 0) {
-                        //                        if(!N[E[i].used_net[j].first].max_once) {
-                        //                                E[i].used_net[j].second += 1.5*dumy;     //TDM変更
-                        //                        }
-                        //                        else{
-                        //                                E[i].used_net[j].second += 1.2*dumy;   //TDM変更
-                        //                        }
-                        //                }
-                        //                else {
-                        //                        E[i].used_net[j].second += dumy;           //TDM変更
-                        //                }
-                        //        }
-                        //}
-
-                        //if(debug) {                 //非常事態の計算
-                        //        for(j = 0; j < E[i].used_net.size(); ++j) {
-                        //                const int dumy = E[i].used_net[j].second >> 1;
-                        //                N[E[i].used_net[j].first].cost += dumy;                 //ネットのコスト更新
-                        //                E[i].used_net[j].second += dumy;                 //TDM変更
-                        //        }
-                        //}
-                        //}
                 }
                 if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
         }
@@ -397,7 +357,6 @@ void calc_TDM(){
         //解（枝、TDM）代入
         for(i = 0; i < ne; ++i) {
                 for(j = 0; j < E[i].used_net.size(); ++j) {
-                        //if(E[i].used_net[j].second&1) ++E[i].used_net[j].second;
                         N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
                 }
         }
