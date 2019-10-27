@@ -44,17 +44,17 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         fileout(filename[2]);
 
         //スコア表示
-        max_TDM = 0;
-        for(int i = 0; i < nw; ++i) {
-                N[i].sum_cost(); //ネットごとのTDMを計算
-        }
-        for(int i = 0; i < ng; ++i) {
-                G[i].sum_cost(); //グループごとのTDMを計算
-        }
-        sort(G.begin(), G.end());
-        max_g = G[ng-1].id;
-        max_TDM = G[ng-1].cost;
-        cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << G[ng-1].cost << endl;
+        //max_TDM = 0;
+	//for(int i = 0; i < nw; ++i) {
+        //        N[i].sum_cost(); //ネットごとのTDMを計算
+        //}
+        //for(int i = 0; i < ng; ++i) {
+        //        G[i].sum_cost(); //グループごとのTDMを計算
+        //}
+        //sort(G.begin(), G.end());
+        //max_g = G[ng-1].id;
+        //max_TDM = G[ng-1].cost;
+        //cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << G[ng-1].cost << endl;
 
         return 0;
 }
@@ -277,7 +277,7 @@ void calc_TDM(){
 
         for(i = 0; i < nw; ++i)
                 for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 10});         //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 2});         //使った枝にネットidを記憶させる
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
@@ -331,7 +331,7 @@ void calc_TDM(){
                 if(count >= 10)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 3; //40回中30回以上最大グループに属していたならフラグは立ったまま
+                                N[i].max_his -= 7; //40回中30回以上最大グループに属していたならフラグは立ったまま
                                 if(N[i].max_his < 0) N[i].max_his = 0;
                         }
                         count = 0; //リセット
