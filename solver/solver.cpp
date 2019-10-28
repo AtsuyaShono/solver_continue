@@ -67,17 +67,17 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         printf("fileout time %lf[ms]\n", time);
 
         //スコア表示
-        //max_TDM = 0;
-        //for(int i = 0; i < nw; ++i) {
-        //        N[i].sum_cost(); //ネットごとのTDMを計算
-        //}
-        //for(int i = 0; i < ng; ++i) {
-        //        G[i].sum_cost(); //グループごとのTDMを計算
-        //}
-        //sort(G.begin(), G.end());
-        //max_g = G[ng-1].id;
-        //max_TDM = G[ng-1].cost;
-        //cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << G[ng-1].cost << endl;
+        max_TDM = 0;
+        for(int i = 0; i < nw; ++i) {
+                N[i].sum_cost(); //ネットごとのTDMを計算
+        }
+        for(int i = 0; i < ng; ++i) {
+                G[i].sum_cost(); //グループごとのTDMを計算
+        }
+        sort(G.begin(), G.end());
+        max_g = G[ng-1].id;
+        max_TDM = G[ng-1].cost;
+        cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << G[ng-1].cost << endl;
 
         return 0;
 }
