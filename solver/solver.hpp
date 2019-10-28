@@ -8,6 +8,8 @@
 #include <cmath>
 #include <omp.h>
 
+#include <time.h>
+
 using namespace std;
 
 //#include "RCP.cpp" //逆数の配列ファイル

@@ -9,21 +9,38 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         omp_set_num_threads(8);
         #endif
 
+        clock_t start = clock();
+
         /////////////////
         //ファイル読み込み//
         /////////////////
         fileload(filename[1]);
 
+        clock_t end = clock();
+        double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+        printf("fileload time %lf[ms]\n", time);
+
+        start = clock();
+
         //////////
         //経路探索//
         //////////
         routing();
-        //cout << "Routing Complete!" << endl;
+
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+        printf("routing time %lf[ms]\n", time);
+
+        start = clock();
 
         //////////
         //TDM計算//
         //////////
         calc_TDM();
+
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+        printf("calc_TDM time %lf[ms]\n", time);
 
         //TDM　ratio 確認
         //for(int i = 0; i < ne; ++i) E[i].sum = 0;
@@ -38,14 +55,20 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         //}
         //cout << endl;
 
+        start = clock();
+
         /////////////////
         //ファイル書き込み//
         /////////////////
         fileout(filename[2]);
 
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
+        printf("fileout time %lf[ms]\n", time);
+
         //スコア表示
         //max_TDM = 0;
-	//for(int i = 0; i < nw; ++i) {
+        //for(int i = 0; i < nw; ++i) {
         //        N[i].sum_cost(); //ネットごとのTDMを計算
         //}
         //for(int i = 0; i < ng; ++i) {
