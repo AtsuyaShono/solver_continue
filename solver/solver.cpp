@@ -197,7 +197,7 @@ void routing(){ //経路探索
         //その優先順位決め
         for ( i = 0; i < ng; ++i)
                 for ( j = 0; j < G[i].net_id.size(); ++j)
-                        N[G[i].net_id[j]].priority += N[G[i].net_id[j]].target_sig.size() + G[i].net_id.size();
+                        N[G[i].net_id[j]].priority += G[i].net_id.size();
 
         //ダイクストラ用のnodeクラスに情報を格納
         for(i = 0; i < ne; ++i) {
@@ -205,8 +205,10 @@ void routing(){ //経路探索
                 V[E[i].node_id2].edge.emplace_back(E[i].id);         //最後尾にedgeID格納
         }
 
-        for(i = 0; i < nw; ++i)
+        for(i = 0; i < nw; ++i){
+		N[i].priority += N[i].target_sig.size();
                 que.push(N[i]); //優先順位順にキューにpushする
+	}
 
         //経路探索
         #pragma omp parallel for
