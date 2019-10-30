@@ -17,8 +17,8 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         fileload(filename[1]);
 
         clock_t end = clock();
-        double time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
-        printf("fileload time %lf[ms]\n", time);
+        double time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("fileload time %lf[s]\n", time);
 
         start = clock();
 
@@ -28,8 +28,8 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         routing();
 
         end = clock();
-        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
-        printf("routing time %lf[ms]\n", time);
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("routing time %lf[s]\n", time);
 
         start = clock();
 
@@ -39,8 +39,8 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         calc_TDM();
 
         end = clock();
-        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
-        printf("calc_TDM time %lf[ms]\n", time);
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("calc_TDM time %lf[s]\n", time);
 
         //TDM　ratio 確認
         //for(int i = 0; i < ne; ++i) E[i].sum = 0;
@@ -63,8 +63,8 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         fileout(filename[2]);
 
         end = clock();
-        time = static_cast<double>(end - start) / CLOCKS_PER_SEC * 1000.0;
-        printf("fileout time %lf[ms]\n", time);
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("fileout time %lf[s]\n", time);
 
         //スコア表示
         max_TDM = 0;
@@ -286,7 +286,8 @@ void routing(){ //経路探索
                 {
                         for(int loop = 0; loop < T.size(); ++loop) {
                                 N[id].T.push_back({T[loop], 2});         //解を代入
-                                E[T[loop]].cost += 1; //コスト更新
+                                ++E[T[loop]].cost; //コスト更新
+                                //E[T[loop]].cost += 1 + (double)(nw - i) / nw;
                         }
                 }
         }

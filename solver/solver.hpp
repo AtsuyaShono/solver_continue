@@ -36,11 +36,11 @@ int id;         //辺のid
 int node_id1;         //接続されているFPGAid
 int node_id2;         //接続されているFPGAid
 
-long cost;   //TDM比
+int cost;   //TDM比
 vector<pair<int, long> > used_net; //枝を使ったネットid first:id second :cost
 double sum; //各ネットの1/TDMの合計
 
-edge() : cost(0) {
+edge() : cost(1) {
 }
 
 bool restriction(); //TDM制約を満たしているか
