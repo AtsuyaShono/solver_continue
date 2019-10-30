@@ -205,10 +205,10 @@ void routing(){ //経路探索
                 V[E[i].node_id2].edge.emplace_back(E[i].id);         //最後尾にedgeID格納
         }
 
-        for(i = 0; i < nw; ++i){
-		N[i].priority += N[i].target_sig.size();
+        for(i = 0; i < nw; ++i) {
+                N[i].priority += N[i].target_sig.size();
                 que.push(N[i]); //優先順位順にキューにpushする
-	}
+        }
 
         //経路探索
         #pragma omp parallel for
@@ -282,11 +282,12 @@ void routing(){ //経路探索
                         }
                 }
 
-                for(int loop = 0; loop < T.size(); ++loop) {
-                        #pragma omp critical
-                        N[id].T.push_back({T[loop], 2});                 //解を代入
-                        #pragma omp critical
-                        E[T[loop]].cost += 1;         //コスト更新
+                #pragma omp critical
+                {
+                        for(int loop = 0; loop < T.size(); ++loop) {
+                                N[id].T.push_back({T[loop], 2});         //解を代入
+                                E[T[loop]].cost += 1; //コスト更新
+                        }
                 }
         }
 }
@@ -331,6 +332,7 @@ void calc_TDM(){
                         #pragma omp for
                         for(i = 0; i < ng - top_g; ++i)
                                 G[i].sum_cost(); //グループごとのTDMを計算
+
                         #pragma omp for
                         for(i = 0; i < ne; ++i)
                                 E[i].sum_forrestriction(); //TDM逆数総和の計算
