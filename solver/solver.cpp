@@ -236,7 +236,6 @@ void routing(){ //経路探索
                         vector<int> route(nf); //経路記憶,node i までの最短経路で最後に使われたedgeid：route[i] = edgeid
                         int v; //現在地点のノード番号
                         priority_queue<P, vector<P>, greater<P> > que; //キュー：昇順
-                        int k;
 
                         //初期化
                         dis[N[id].source_sig] = 0;         //出発地点のコストは0
@@ -250,13 +249,13 @@ void routing(){ //経路探索
                                 v = p.node;         //現在地
 
                                 if(target_sig[v] && !included_sig[v]) { //まだ繋がっていないターゲットを見つけたら終了
-                                        target_sig[v] = false; //target訪問済みなのでfalse
+                                        //target_sig[v] = false; //target訪問済みなのでfalse
                                         break;
                                 }
 
                                 if(dis[v] < p.path) continue;         //startからvまでのコストが現在時点の最短距離より小さい場合スキップ（枝刈り）
 
-                                for(k = 0; k < V[v].edge.size(); ++k) {         //vの枝を全て参照
+                                for(int k = 0; k < V[v].edge.size(); ++k) {         //vの枝を全て参照
                                         const edge e = E[V[v].edge[k]];         //vのi番目のedgeを記憶
                                         int to;        //記憶用接続先のnodeid
                                         if(e.node_id1 == v) to = e.node_id2;         //node_id1がvなら接続先はnode_id2
@@ -271,14 +270,13 @@ void routing(){ //経路探索
                         }
 
                         //ルート格納
-                        k = v;         //到着地点のsourceノードから枝を逆走して格納していく
                         while(1) {
-                                included_sig[k] = true;         //信号を含むことになるノードにフラグを立てる
-                                if(k == N[id].source_sig || penalty_cost[route[k]] == 0) break;         //探索を始めた元のノードに戻ってくれば終了 //コストが0になっているところはすでに訪問済みなので終了
-                                else T.emplace_back(route[k]);         //解の枝を記憶
-                                penalty_cost[route[k]] = 0; //もう使っているので次からコストは0
-                                if(E[route[k]].node_id1 != k) k = E[route[k]].node_id1;         //枝の接続先を記憶
-                                else k = E[route[k]].node_id2;         //枝の接続先を記憶
+                                included_sig[v] = true;         //信号を含むことになるノードにフラグを立てる
+                                if(v == N[id].source_sig || penalty_cost[route[v]] == 0) break;         //探索を始めた元のノードに戻ってくれば終了 //コストが0になっているところはすでに訪問済みなので終了
+                                else T.emplace_back(route[v]);         //解の枝を記憶
+                                penalty_cost[route[v]] = 0; //もう使っているので次からコストは0
+                                if(E[route[v]].node_id1 != v) v = E[route[v]].node_id1;         //枝の接続先を記憶
+                                else v = E[route[v]].node_id2;         //枝の接続先を記憶
                         }
                 }
 
