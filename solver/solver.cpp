@@ -146,10 +146,6 @@ void fileload(char *inputfile){
         int i;
 
         FILE *fp = fopen(inputfile, "r");
-        if(fp == NULL) {
-                printf("%s file not open!\n", inputfile);
-                exit(0);
-        }
 
         fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
         V.resize(nf);
@@ -189,27 +185,20 @@ void fileload(char *inputfile){
                         G[i].net_id.emplace_back(data1);
                 }
         }
-
-        //fclose(fp);
 }
-
-
 
 void fileout(char *outputfile){ //出力
 
         int i,j;
-        string line;
 
-        ofstream ofs(outputfile);
-        ostringstream stream(line);
+        FILE *fp = fopen(outputfile, "w");;
 
+        /* 書き込み */
         for(i = 0; i < nw; ++i) {
-                stream.str("");
-                stream << N[i].T.size() << endl;
+                fprintf(fp, "%lu\n", N[i].T.size());
                 for(j = 0; j < N[i].T.size(); ++j) {
-                        stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+                        fprintf(fp, "%d %ld", N[i].T[j].first, N[i].T[j].second);
                 }
-                ofs << stream.str();
         }
 }
 

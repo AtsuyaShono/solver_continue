@@ -1,18 +1,16 @@
 #include <iostream>
-#include <fstream>
-#include <sstream>
 #include <iomanip>
 #include <queue>
 #include <algorithm>
 #include <vector>
 #include <cmath>
+#include <string.h>
 #include <omp.h>
+
 
 #include <time.h>
 
 using namespace std;
-
-//#include "RCP.cpp" //逆数の配列ファイル
 
 #define INF 1e+9
 
