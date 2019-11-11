@@ -42,19 +42,6 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
         printf("calc_TDM time %lf[s]\n", time);
 
-        //TDM　ratio 確認
-        //for(int i = 0; i < ne; ++i) E[i].sum = 0;
-        //for(int i = 0; i < nw; ++i)
-        //        N[i].sum_forrestriction();
-        //for(int i = 0; i < ne; ++i) {
-        //        if(E[i].sum > 1) {
-        //                while(E[i].sum > 1) {
-
-        //                }
-        //        }
-        //}
-        //cout << endl;
-
         start = clock();
 
         /////////////////
@@ -84,7 +71,8 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 ///////
 /*関数*/
 ///////
-void fileload(char *inputfile){ //入力
+/*
+   void fileload(char *inputfile){ //入力
 
         int data; //読み取り変数
         string line; //文字列記憶用
@@ -111,8 +99,6 @@ void fileload(char *inputfile){ //入力
         //ng
         stream >> ng; //読み込み
 
-        //float c = (float)100/(ne + nw + ng); //不要
-
         V.resize(nf);
         E.resize(ne);
         N.resize(nw);
@@ -120,11 +106,6 @@ void fileload(char *inputfile){ //入力
 
         //edge
         for(i = 0; i < ne; ++i) {
-
-                /*
-                      cout << "\r" << "File Loading... " << setprecision(3) << c*i << "%     ";       // 不要
-                 */
-
                 E[i].id = i; //id格納
                 getline(ifs, line); //1行読み込む
                 istringstream stream(line);
@@ -134,41 +115,85 @@ void fileload(char *inputfile){ //入力
 
         //net
         for(i = 0; i < nw; ++i) {
-                /*
-                      cout << "\r" << "File Loading... " << setprecision(3) << c*(i + ne) << "%     "; // 不要
-                 */
-
                 N[i].id = i; //id格納
                 getline(ifs, line); // 1行読み込む
                 istringstream stream(line);
                 stream >> N[i].source_sig; //読み込み
                 for (j = 0; stream >> data; ++j) { // 1個ずつ読み込み
                         N[i].target_sig.emplace_back(data); //格納
-                        ++targets;
+ ++targets;
                 }
         }
 
         //group
         for(i = 0; i < ng; ++i) {
-                /*
-                      cout << "\r" << "File Loading... " << setprecision(3) << c*(i + ne + nw) << "%     "; // 不要
-                 */
                 G[i].id = i;         //id格納
                 getline(ifs, line); //1行読み込む
                 istringstream stream(line);
                 for (j = 0; stream >> data; ++j) { // 1個ずつ読み込み
                         G[i].net_id.emplace_back(data); //格納
-                        ++nets_in_group;
+ ++nets_in_group;
+                }
+        }
+   }
+ */
+
+void fileload(char *inputfile){
+
+        int size = 1024*1024;
+        int data1, data2;  //読み取り変数
+        char line[size];  //文字列記憶用
+        int i;
+
+        FILE *fp = fopen(inputfile, "r");
+        if(fp == NULL) {
+                printf("%s file not open!\n", inputfile);
+                exit(0);
+        }
+
+        fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
+        V.resize(nf);
+        E.resize(ne);
+        N.resize(nw);
+        G.resize(ng);
+
+        for(i = 0; i < ne; ++i) {
+                E[i].id = i;
+                fscanf(fp, "%d %d\n", &data1, &data2);
+                E[i].node_id1 = data1;
+                E[i].node_id2 = data2;
+        }
+
+        for(i = 0; i < nw; ++i) {
+                N[i].id = i;
+                fgets(line, size, fp);
+                data1 = atoi(strtok(line, " "));
+                N[i].source_sig = data1;
+                while(1) {
+                        const char *str = strtok(NULL, " ");
+                        if(str == NULL) break;
+                        data1 = atoi(str);
+                        N[i].target_sig.emplace_back(data1);
                 }
         }
 
-        //paramator = (double)targets / nets_in_group; //ファイルサイズによって変えるパラメータ
-        //paramator_x = (double)1 / paramator;
+        for(i = 0; i < ng; ++i) {
+                G[i].id = i;
+                fgets(line, size, fp);
+                data1 = atoi(strtok(line, " "));
+                G[i].net_id.emplace_back(data1);
+                while(1) {
+                        const char *str = strtok(NULL, " ");
+                        if(str == NULL) break;
+                        data1 = atoi(str);
+                        G[i].net_id.emplace_back(data1);
+                }
+        }
 
-/*
-        cout << "\r" << "File Load... Success!" << endl;
- */
+        //fclose(fp);
 }
+
+
 
 void fileout(char *outputfile){ //出力
 
