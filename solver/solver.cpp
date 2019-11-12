@@ -187,19 +187,36 @@ void fileload(char *inputfile){
         }
 }
 
+
+
 void fileout(char *outputfile){ //出力
 
         int i,j;
+        char out[1024];
 
-        FILE *fp = fopen(outputfile, "w");;
+        FILE *fp = fopen(outputfile, "w");
 
-        /* 書き込み */
         for(i = 0; i < nw; ++i) {
-                fprintf(fp, "%lu\n", N[i].T.size());
+                sprintf(out, "%lu\n", N[i].T.size());
                 for(j = 0; j < N[i].T.size(); ++j) {
-                        fprintf(fp, "%d %ld", N[i].T[j].first, N[i].T[j].second);
+                        sprintf(out, "%s%d %ld\n", out, N[i].T[j].first, N[i].T[j].second);
                 }
+                fprintf(fp, "%s", out);
         }
+        //int i,j;
+        //string line;
+
+        //ofstream ofs(outputfile);
+        //ostringstream stream(line);
+
+        //for(i = 0; i < nw; ++i) {
+        //        stream.str("");
+        //        stream << N[i].T.size() << endl;
+        //        for(j = 0; j < N[i].T.size(); ++j) {
+        //                stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+        //        }
+        //        ofs << stream.str();
+        //}
 }
 
 void routing(){ //経路探索
