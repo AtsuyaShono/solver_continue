@@ -325,7 +325,8 @@ void routing(){ //経路探索
 void calc_TDM(){
 
         int i,j;
-        queue<edge> q_edge;
+        //queue<edge> q_edge;
+        priority_queue<edge, vector<edge>, less<edge> > q_edge;
 
         int top = nw * 0.01;         //グループコスト順に上からtop分のネットをmax,max_hisと設定する
         int count = 0; //max_his用のカウント
@@ -368,6 +369,7 @@ void calc_TDM(){
                                 E[i].sum_forrestriction(); //TDM逆数総和の計算
                 }
 
+
                 sort(G.begin(), G.end());         //cost順にsort
 
                 //top個のネットにフラグたて
@@ -399,12 +401,14 @@ void calc_TDM(){
                 for(int count = 0; count < loop; ++count) {
                   #pragma omp critical
                         {
-                                i = q_edge.front().id; //TDM操作するedgeを記憶
+                                i = q_edge.top().id; //TDM操作するedgeを記憶
                                 q_edge.pop(); //一旦消す
-                                if(E[i].sum > 2.0) q_edge.push(E[i]);
                         }
                         E[i].increase_TDM();
                 }
+                for(i = 0; i < ne; ++i)
+                        if(E[i].sum > 2.0) q_edge.push(E[i]);
+
                 if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
         }
 
