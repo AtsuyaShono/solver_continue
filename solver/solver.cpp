@@ -325,21 +325,20 @@ void routing(){ //経路探索
 void calc_TDM(){
 
         int i,j;
-        //queue<edge> q_edge;
-        priority_queue<edge, vector<edge>, less<edge> > q_edge;
-
+        int rest = ne;
         int top = nw * 0.01;         //グループコスト順に上からtop分のネットをmax,max_hisと設定する
         int count = 0; //max_his用のカウント
         int top_g = 0; //上位のグループの数
 
-        for(i = 0; i < nw; ++i)
+        for(i = 0; i < nw; ++i) {
                 for(j = 0; j < N[i].T.size(); ++j)
                         E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 2});         //使った枝にネットidを記憶させる
+                N[i].T.clear();                         //解をクリア
+        }
 
         for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
                 for(j = 0; j < E[i].used_net.size(); ++j)
                         N[E[i].used_net[j].first].cost += E[i].used_net[j].second;
-                q_edge.push(E[i]);         //キューにedge id をpush
         }
 
         //だいたいでTDMを増やしていく
@@ -369,7 +368,6 @@ void calc_TDM(){
                                 E[i].sum_forrestriction(); //TDM逆数総和の計算
                 }
 
-
                 sort(G.begin(), G.end());         //cost順にsort
 
                 //top個のネットにフラグたて
@@ -396,29 +394,27 @@ void calc_TDM(){
                         count = 0; //リセット
                 }
 
-                int loop = q_edge.size();
                 #pragma omp parallel for
-                for(int count = 0; count < loop; ++count) {
-                  #pragma omp critical
-                        {
-                                i = q_edge.top().id; //TDM操作するedgeを記憶
-                                q_edge.pop(); //一旦消す
-                        }
+                for(i = 0; i < rest; ++i) {
                         E[i].increase_TDM();
                 }
-                for(i = 0; i < ne; ++i)
-                        if(E[i].sum > 2.0) q_edge.push(E[i]);
 
-                if(q_edge.empty()) break;         //全ての枝が制約を満たせば終了
+                for(i = 0; i < rest; ++i) {
+                        if(E[i].sum <= 2.0) {
+                                for(j = 0; j < E[i].used_net.size(); ++j)
+                                        N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
+                                //E[i] = E.back();
+                                iter_swap(E.begin()+i, E.begin()+rest);
+                                --rest;
+                        }
+                }
+                if(rest == 0) break;         //全ての枝が制約を満たせば終了
         }
-
-        for(i = 0; i < nw; ++i)
-                N[i].T.clear();         //解をクリア
 
         //解（枝、TDM）代入
-        for(i = 0; i < ne; ++i) {
-                for(j = 0; j < E[i].used_net.size(); ++j) {
-                        N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
-                }
-        }
+        //for(i = 0; i < ne; ++i) {
+        //        for(j = 0; j < E[i].used_net.size(); ++j) {
+        //                N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
+        //        }
+        //}
 }
