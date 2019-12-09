@@ -53,6 +53,16 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
         printf("fileout time %lf[s]\n", time);
 
+        //TDM　ratio 確認
+        for(int i = 0; i < ne; ++i) E[i].sum = 0;
+        for(int i = 0; i < nw; ++i)
+                N[i].sum_forrestriction();
+        for(int i = 0; i < ne; ++i) {
+                cout << "  " << setprecision(5) << (float)E[i].sum;
+                if(i % 20 == 0) cout << endl;
+        }
+        cout << endl;
+
         //スコア表示
         max_TDM = 0;
         for(int i = 0; i < nw; ++i) {
@@ -71,8 +81,55 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 ///////
 /*関数*/
 ///////
-/*
-   void fileload(char *inputfile){ //入力
+void fileload(char *inputfile){    //入力
+
+        /*
+           int size = 1024*1024;
+           int data1, data2; //読み取り変数
+           char line[size]; //文字列記憶用
+           int i;
+
+           FILE *fp = fopen(inputfile, "r");
+
+           fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
+           V.resize(nf);
+           E.resize(ne);
+           N.resize(nw);
+           G.resize(ng);
+
+           for(i = 0; i < ne; ++i) {
+                E[i].id = i;
+                fscanf(fp, "%d %d\n", &data1, &data2);
+                E[i].node_id1 = data1;
+                E[i].node_id2 = data2;
+           }
+
+           for(i = 0; i < nw; ++i) {
+                N[i].id = i;
+                fgets(line, size, fp);
+                data1 = atoi(strtok(line, " "));
+                N[i].source_sig = data1;
+                while(1) {
+                        const char *str = strtok(NULL, " ");
+                        if(str == NULL) break;
+                        data1 = atoi(str);
+                        N[i].target_sig.emplace_back(data1);
+                }
+           }
+
+           for(i = 0; i < ng; ++i) {
+                G[i].id = i;
+                fgets(line, size, fp);
+                data1 = atoi(strtok(line, " "));
+                G[i].net_id.emplace_back(data1);
+                while(1) {
+                        const char *str = strtok(NULL, " ");
+                        if(str == NULL) break;
+                        data1 = atoi(str);
+                        G[i].net_id.emplace_back(data1);
+                }
+           }
+         */
 
         int data; //読み取り変数
         string line; //文字列記憶用
@@ -121,7 +178,6 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
                 stream >> N[i].source_sig; //読み込み
                 for (j = 0; stream >> data; ++j) { // 1個ずつ読み込み
                         N[i].target_sig.emplace_back(data); //格納
- ++targets;
                 }
         }
 
@@ -132,91 +188,39 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
                 istringstream stream(line);
                 for (j = 0; stream >> data; ++j) { // 1個ずつ読み込み
                         G[i].net_id.emplace_back(data); //格納
- ++nets_in_group;
-                }
-        }
-   }
- */
-
-void fileload(char *inputfile){
-
-        int size = 1024*1024;
-        int data1, data2;  //読み取り変数
-        char line[size];  //文字列記憶用
-        int i;
-
-        FILE *fp = fopen(inputfile, "r");
-
-        fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
-        V.resize(nf);
-        E.resize(ne);
-        N.resize(nw);
-        G.resize(ng);
-
-        for(i = 0; i < ne; ++i) {
-                E[i].id = i;
-                fscanf(fp, "%d %d\n", &data1, &data2);
-                E[i].node_id1 = data1;
-                E[i].node_id2 = data2;
-        }
-
-        for(i = 0; i < nw; ++i) {
-                N[i].id = i;
-                fgets(line, size, fp);
-                data1 = atoi(strtok(line, " "));
-                N[i].source_sig = data1;
-                while(1) {
-                        const char *str = strtok(NULL, " ");
-                        if(str == NULL) break;
-                        data1 = atoi(str);
-                        N[i].target_sig.emplace_back(data1);
-                }
-        }
-
-        for(i = 0; i < ng; ++i) {
-                G[i].id = i;
-                fgets(line, size, fp);
-                data1 = atoi(strtok(line, " "));
-                G[i].net_id.emplace_back(data1);
-                while(1) {
-                        const char *str = strtok(NULL, " ");
-                        if(str == NULL) break;
-                        data1 = atoi(str);
-                        G[i].net_id.emplace_back(data1);
+                        N[data].included_group.emplace_back(i);
                 }
         }
 }
 
 
-
 void fileout(char *outputfile){ //出力
 
-        int i,j;
-        char out[1024];
+        //char out[1024];
 
-        FILE *fp = fopen(outputfile, "w");
-
-        for(i = 0; i < nw; ++i) {
-                sprintf(out, "%lu\n", N[i].T.size());
-                for(j = 0; j < N[i].T.size(); ++j) {
-                        sprintf(out, "%s%d %ld\n", out, N[i].T[j].first, N[i].T[j].second);
-                }
-                fprintf(fp, "%s", out);
-        }
-        //int i,j;
-        //string line;
-
-        //ofstream ofs(outputfile);
-        //ostringstream stream(line);
+        //FILE *fp = fopen(outputfile, "w");
 
         //for(i = 0; i < nw; ++i) {
-        //        stream.str("");
-        //        stream << N[i].T.size() << endl;
+        //        sprintf(out, "%lu\n", N[i].T.size());
         //        for(j = 0; j < N[i].T.size(); ++j) {
-        //                stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+        //                sprintf(out, "%s%d %ld\n", out, N[i].T[j].first, N[i].T[j].second);
         //        }
-        //        ofs << stream.str();
+        //        fprintf(fp, "%s", out);
         //}
+
+        string line;
+
+        ofstream ofs(outputfile);
+        ostringstream stream(line);
+
+        for(int i = 0; i < nw; ++i) {
+                stream.str("");
+                stream << N[i].T.size() << endl;
+                for(int j = 0; j < N[i].T.size(); ++j) {
+                        stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+                }
+                ofs << stream.str();
+        }
 }
 
 void routing(){ //経路探索
@@ -322,7 +326,7 @@ void routing(){ //経路探索
         }
 }
 
-void calc_TDM(){
+/*void calc_TDM(){
 
         int i,j;
         int rest = ne;
@@ -343,27 +347,27 @@ void calc_TDM(){
 
         //だいたいでTDMを増やしていく
         while(1) {
-                #pragma omp parallel
+ #pragma omp parallel
                 {
-                        #pragma omp for private(j)
+ #pragma omp for private(j)
                         for(i = 0; i < top_g; ++i)
                                 for(j = 0; j < G[ng-1-i].net_id.size(); ++j)
                                         N[G[ng-1-i].net_id[j]].unmax(); //最大グループ所属のネットフラグ初期化
 
-                        #pragma omp for
+ #pragma omp for
                         for(i = 0; i < nw; ++i) N[i].cost = 0;
 
-                        #pragma omp for private(j)
+ #pragma omp for private(j)
                         for(i = 0; i < ne; ++i)
                                 for(j = 0; j < E[i].used_net.size(); ++j)
                                         N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                                   //ネットのコスト更新
 
                         //全グループのコスト計算
-                        #pragma omp for
+ #pragma omp for
                         for(i = 0; i < ng - top_g; ++i)
                                 G[i].sum_cost(); //グループごとのTDMを計算
 
-                        #pragma omp for
+ #pragma omp for
                         for(i = 0; i < ne; ++i)
                                 E[i].sum_forrestriction(); //TDM逆数総和の計算
                 }
@@ -374,17 +378,17 @@ void calc_TDM(){
                 int count_net = 0; //フラグをたてたネットの数
                 i = 0;
                 while(count_net < top) {
-                        #pragma omp parallel for
+ #pragma omp parallel for
                         for(j = 0; j < G[ng-1-i].net_id.size(); ++j)
                                 if(N[G[ng-1-i].net_id[j]].max == false) //フラグが立っていないなら
                                         N[G[ng-1-i].net_id[j]].max_flag(); //フラグたて
 
                         count_net += G[ng-1-i].net_id.size(); //カウント
-                        ++i;
+ ++i;
                 }
                 top_g = i; //最大のグループの数
 
-                ++count; //何周したか
+ ++count; //何周したか
                 if(count >= 10)         //max_hisを一定周期でリセット
                 {
                         for(i = 0; i < nw; ++i) {
@@ -394,7 +398,7 @@ void calc_TDM(){
                         count = 0; //リセット
                 }
 
-                #pragma omp parallel for
+ #pragma omp parallel for
                 for(i = 0; i < rest; ++i) {
                         E[i].increase_TDM();
                 }
@@ -403,8 +407,7 @@ void calc_TDM(){
                         if(E[i].sum <= 2.0) {
                                 for(j = 0; j < E[i].used_net.size(); ++j)
                                         N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
-                                //E[i] = E.back();
-                                iter_swap(E.begin()+i, E.begin()+rest);
+                                iter_swap(&E[i], &E[rest-1]);
                                 --rest;
                         }
                 }
@@ -417,4 +420,61 @@ void calc_TDM(){
         //                N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
         //        }
         //}
+   }
+ */
+
+void calc_TDM(){
+
+        for(int i = 0; i < nw; ++i) {
+                for(size_t j = 0; j < N[i].T.size(); ++j)
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,1});         //使った枝にネットidを記憶させる
+                N[i].T.clear();                         //解をクリア
+        }
+
+        for(int i = 0; i < nw; ++i) N[i].cost = 0;
+
+        for(int i = 0; i < ne; ++i)
+                for(size_t j = 0; j < E[i].used_net.size(); ++j)
+                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                             //ネットのコスト更新
+
+        //全グループのコスト計算
+        for(int i = 0; i < ng; ++i)
+                G[i].sum_cost(); //グループごとのTDMを計算
+
+        for (int i = 0; i < ne; i++) {
+
+                for(int j = 0; j < E[i].used_net.size(); ++j)
+                        N[E[i].used_net[j].first].cost -= E[i].used_net[j].second;                       //ネットのコスト更新
+
+                long sum = 0;
+                for (int j = 0; j < E[i].used_net.size(); j++) {
+                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
+                                sum += G[N[E[i].used_net[j].first].included_group[k]].cost;
+                        }
+                }
+
+                for (int j = 0; j < E[i].used_net.size(); j++) {
+                        long sum_ = 0;
+                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
+                                sum_ += G[N[E[i].used_net[j].first].included_group[k]].cost << 1;
+                        }
+                        E[i].used_net[j].second = (sum + (sum_ - 1)) / sum_;
+                }
+
+                for(int j = 0; j < E[i].used_net.size(); ++j)
+                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                       //ネットのコスト更新
+
+                for(int j = 0; j < E[i].used_net.size(); ++j) {
+                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
+                                G[N[E[i].used_net[j].first].included_group[k]].sum_cost();
+                        }
+                }
+        }
+
+        //解（枝、TDM）代入
+        for(int i = 0; i < ne; ++i) {
+                for(int j = 0; j < E[i].used_net.size(); ++j) {
+                        N[E[i].used_net[j].first].T.push_back({E[i].id, 2*E[i].used_net[j].second});
+                }
+        }
 }

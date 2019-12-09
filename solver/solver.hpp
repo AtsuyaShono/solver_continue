@@ -65,6 +65,7 @@ vector<int> target_sig;         //送信先node
 long priority; //ルーティングの優先順位、高い方から先にルーティングする
 long cost;   //最終的なネットのTDM
 vector<pair<int, long> > T;   //ダイクストラ用の最短経路edgeid first:edgeid,second:TDM
+vector<int> included_group; //含まれているグループid
 
 bool max; //スコアとなるグループに属している場合true
 int max_his; //過去何回かで何回以上最大グループに属している場合正の値
@@ -198,9 +199,8 @@ digitBinary(int n)
 ////////////
 /*メンバ関数*/
 ////////////
-void edge::sum_forrestriction(){ //制約判定のためのTDM逆数の総和
-        sum = 0;
-        for(int i = 0; i < used_net.size(); ++i) sum += rcp(used_net[i].second);
+void net::sum_forrestriction(){ //制約判定のためのTDM逆数の総和
+        for(int i = 0; i < T.size(); ++i) E[T[i].first].sum += rcp(T[i].second);
 }
 
 void edge::increase_TDM(){ // 非常事態の時、適当に増やす
@@ -228,7 +228,7 @@ void edge::increase_TDM(){ // 非常事態の時、適当に増やす
 
                 if(debug) {           //非常事態の計算
                         for(int i = 0; i < used_net.size(); ++i) {
-                                const int dumy = used_net[i].second >> 1;
+                                const int dumy = used_net[i].second * 0.5;
                                 used_net[i].second += dumy;           //TDM変更
                         }
                 }
