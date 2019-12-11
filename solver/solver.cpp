@@ -64,19 +64,19 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         //cout << endl;
 
         ////スコア表示
-        //max_TDM = 0;
-        //for(int i = 0; i < nw; ++i) {
-        //        N[i].sum_cost(); //ネットごとのTDMを計算
-        //}
-        //for(int i = 0; i < ng; ++i) {
-        //        G[i].sum_cost(); //グループごとのTDMを計算
-        //        if(max_TDM < G[i].cost) {
-        //                max_TDM = G[i].cost;
-        //                max_g = i;
-        //        }
-        //}
+        max_TDM = 0;
+        for(int i = 0; i < nw; ++i) {
+                N[i].sum_cost(); //ネットごとのTDMを計算
+        }
+        for(int i = 0; i < ng; ++i) {
+                G[i].sum_cost(); //グループごとのTDMを計算
+                if(max_TDM < G[i].cost) {
+                        max_TDM = G[i].cost;
+                        max_g = i;
+                }
+        }
 
-        //cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << max_TDM << endl;
+        cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << max_TDM << endl;
 
         return 0;
 }
@@ -286,7 +286,6 @@ void routing(){ //経路探索
                                 v = p.node;         //現在地
 
                                 if(target_sig[v] && !included_sig[v]) { //まだ繋がっていないターゲットを見つけたら終了
-                                        //target_sig[v] = false; //target訪問済みなのでfalse
                                         break;
                                 }
 
@@ -322,122 +321,24 @@ void routing(){ //経路探索
                         for(int loop = 0; loop < T.size(); ++loop) {
                                 N[id].T.push_back({T[loop], 2});         //解を代入
                                 ++E[T[loop]].cost; //コスト更新
-                                //E[T[loop]].cost += 1 + (double)(nw - i) / nw;
                         }
                 }
         }
 }
 
-/*void calc_TDM(){
-
-        int i,j;
-        int rest = ne;
-        int top = nw * 0.01;         //グループコスト順に上からtop分のネットをmax,max_hisと設定する
-        int count = 0; //max_his用のカウント
-        int top_g = 0; //上位のグループの数
-
-        for(i = 0; i < nw; ++i) {
-                for(j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost * 0.01 + 2});         //使った枝にネットidを記憶させる
-                N[i].T.clear();                         //解をクリア
-        }
-
-        for(i = 0; i < ne; ++i) {         //ネットごとのTDMを計算
-                for(j = 0; j < E[i].used_net.size(); ++j)
-                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;
-        }
-
-        //だいたいでTDMを増やしていく
-        while(1) {
- #pragma omp parallel
-                {
- #pragma omp for private(j)
-                        for(i = 0; i < top_g; ++i)
-                                for(j = 0; j < G[ng-1-i].net_id.size(); ++j)
-                                        N[G[ng-1-i].net_id[j]].unmax(); //最大グループ所属のネットフラグ初期化
-
- #pragma omp for
-                        for(i = 0; i < nw; ++i) N[i].cost = 0;
-
- #pragma omp for private(j)
-                        for(i = 0; i < ne; ++i)
-                                for(j = 0; j < E[i].used_net.size(); ++j)
-                                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                                   //ネットのコスト更新
-
-                        //全グループのコスト計算
- #pragma omp for
-                        for(i = 0; i < ng - top_g; ++i)
-                                G[i].sum_cost(); //グループごとのTDMを計算
-
- #pragma omp for
-                        for(i = 0; i < ne; ++i)
-                                E[i].sum_forrestriction(); //TDM逆数総和の計算
-                }
-
-                sort(G.begin(), G.end());         //cost順にsort
-
-                //top個のネットにフラグたて
-                int count_net = 0; //フラグをたてたネットの数
-                i = 0;
-                while(count_net < top) {
- #pragma omp parallel for
-                        for(j = 0; j < G[ng-1-i].net_id.size(); ++j)
-                                if(N[G[ng-1-i].net_id[j]].max == false) //フラグが立っていないなら
-                                        N[G[ng-1-i].net_id[j]].max_flag(); //フラグたて
-
-                        count_net += G[ng-1-i].net_id.size(); //カウント
- ++i;
-                }
-                top_g = i; //最大のグループの数
-
- ++count; //何周したか
-                if(count >= 10)         //max_hisを一定周期でリセット
-                {
-                        for(i = 0; i < nw; ++i) {
-                                N[i].max_his -= 7; //40回中30回以上最大グループに属していたならフラグは立ったまま
-                                if(N[i].max_his < 0) N[i].max_his = 0;
-                        }
-                        count = 0; //リセット
-                }
-
- #pragma omp parallel for
-                for(i = 0; i < rest; ++i) {
-                        E[i].increase_TDM();
-                }
-
-                for(i = 0; i < rest; ++i) {
-                        if(E[i].sum <= 2.0) {
-                                for(j = 0; j < E[i].used_net.size(); ++j)
-                                        N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
-                                iter_swap(&E[i], &E[rest-1]);
-                                --rest;
-                        }
-                }
-                if(rest == 0) break;         //全ての枝が制約を満たせば終了
-        }
-
-        //解（枝、TDM）代入
-        //for(i = 0; i < ne; ++i) {
-        //        for(j = 0; j < E[i].used_net.size(); ++j) {
-        //                N[E[i].used_net[j].first].T.push_back({E[i].id,2*E[i].used_net[j].second});
-        //        }
-        //}
-   }
- */
-
 void calc_TDM(){
 
         for(int i = 0; i < nw; ++i) {
                 for(int j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost});         //使った枝にネットidを記憶させる
+                        //E[N[i].T[j].first].used_net.push_back({N[i].id,1});
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost}); //使った枝にネットidを記憶させる
         }
 
-#pragma omp parallel
+        #pragma omp parallel
         {
                 #pragma omp parallel for
                 for(int i = 0; i < nw; ++i) {
                         N[i].T.clear();           //解をクリア
-                        N[i].cost = 0;
                 }
 
                 #pragma omp parallel for
@@ -452,45 +353,16 @@ void calc_TDM(){
                         G[i].sum_cost(); //グループごとのTDMを計算
 
                 #pragma omp parallel for
-                for(int j = 0; j < nw; ++j) {
+                for(int i = 0; i < nw; ++i) {
                         long max = 0;
-                        for (int k = 0; k < N[j].included_group.size(); k++) {
-                                if(max < G[N[j].included_group[k]].cost) max = G[N[j].included_group[k]].cost;
+                        for (int j = 0; j < N[i].included_group.size(); j++) {
+                                if(max < G[N[i].included_group[j]].cost) max = G[N[i].included_group[j]].cost;
                         }
-                        N[j].sum = max;
+                        N[i].sum = max;
                 }
 
                 #pragma omp parallel for
                 for (int i = 0; i < ne; i++) {
-
-                        //for(int j = 0; j < nw; ++j) N[j].cost = 0;
-
-                        //for(int j = 0; j < ne; ++j)
-                        //        for(int k = 0; k < E[j].used_net.size(); ++k)
-                        //                N[E[j].used_net[k].first].cost += E[j].used_net[k].second;                                       //ネットのコスト更新
-
-                        ////全グループのコスト計算
-                        //for(int j = 0; j < ng; ++j)
-                        //        G[j].sum_cost();         //グループごとのTDMを計算
-
-                        //for(int j = 0; j < nw; ++j) {
-                        //        long max = 0;
-                        //        for (int k = 0; k < N[j].included_group.size(); k++) {
-                        //                if(max < G[N[j].included_group[k]].cost) max = G[N[j].included_group[k]].cost;
-                        //        }
-                        //        N[j].sum = max;
-
-                        //priority_queue<group, vector<group>, less<group> > q_group;
-                        //for (int k = 0; k < N[j].included_group.size(); k++) {
-                        //        q_group.push(G[N[j].included_group[k]]);
-                        //}
-
-                        //for (int k = 0; k < 1; k++) {
-                        //        N[j].sum = G[N[j].included_group[k]].cost;
-                        //        //N[j].sum = q_group.top().cost;
-                        //        q_group.pop();
-                        //}
-
                         long sum = 0;
                         for (int j = 0; j < E[i].used_net.size(); j++) {
                                 sum += N[E[i].used_net[j].first].sum;
