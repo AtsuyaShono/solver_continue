@@ -9,49 +9,49 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         omp_set_num_threads(8);
         #endif
 
-        //clock_t start = clock();
+        clock_t start = clock();
 
         /////////////////
         //ファイル読み込み//
         /////////////////
         fileload(filename[1]);
 
-        //clock_t end = clock();
-        //double time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-        //printf("fileload time %lf[s]\n", time);
+        clock_t end = clock();
+        double time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("fileload time %lf[s]\n", time);
 
-        //start = clock();
+        start = clock();
 
         //////////
         //経路探索//
         //////////
         routing();
 
-        //end = clock();
-        //time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-        //printf("routing time %lf[s]\n", time);
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("routing time %lf[s]\n", time);
 
-        //start = clock();
+        start = clock();
 
         //////////
         //TDM計算//
         //////////
         calc_TDM();
 
-        //end = clock();
-        //time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-        //printf("calc_TDM time %lf[s]\n", time);
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("calc_TDM time %lf[s]\n", time);
 
-        //start = clock();
+        start = clock();
 
         /////////////////
         //ファイル書き込み//
         /////////////////
         fileout(filename[2]);
 
-        //end = clock();
-        //time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
-        //printf("fileout time %lf[s]\n", time);
+        end = clock();
+        time = static_cast<double>(end - start) / CLOCKS_PER_SEC;
+        printf("fileout time %lf[s]\n", time);
 
         //TDM　ratio 確認
         //for(int i = 0; i < ne; ++i) E[i].sum = 0;
@@ -369,8 +369,8 @@ void calc_TDM(){
                         }
 
                         for (int j = 0; j < E[i].used_net.size(); j++) {
-                                long sum_ = N[E[i].used_net[j].first].sum * 2;
-                                E[i].used_net[j].second = (sum + (sum_ - 1)) / sum_;
+                                long sum_ = N[E[i].used_net[j].first].sum;
+                                E[i].used_net[j].second = (sum + (sum_ - 1)) / (sum_*2);
                         }
                 }
         }
