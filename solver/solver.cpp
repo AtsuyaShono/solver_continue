@@ -70,11 +70,13 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
         }
         for(int i = 0; i < ng; ++i) {
                 G[i].sum_cost(); //グループごとのTDMを計算
+                if(max_TDM < G[i].cost) {
+                        max_TDM = G[i].cost;
+                        max_g = i;
+                }
         }
-        sort(G.begin(), G.end());
-        max_g = G[ng-1].id;
-        max_TDM = G[ng-1].cost;
-        cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << G[ng-1].cost << endl;
+
+        cout << "Max group ID is: " << max_g << " and maximum total TDM ratio of all net groups is: " << max_TDM << endl;
 
         return 0;
 }
@@ -425,50 +427,74 @@ void routing(){ //経路探索
 
 void calc_TDM(){
 
+        int top = ng * 0.01;
+
         for(int i = 0; i < nw; ++i) {
-                for(size_t j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,1});         //使った枝にネットidを記憶させる
+                for(int j = 0; j < N[i].T.size(); ++j)
+                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost});         //使った枝にネットidを記憶させる
                 N[i].T.clear();                         //解をクリア
         }
 
         for(int i = 0; i < nw; ++i) N[i].cost = 0;
 
         for(int i = 0; i < ne; ++i)
-                for(size_t j = 0; j < E[i].used_net.size(); ++j)
+                for(int j = 0; j < E[i].used_net.size(); ++j) {
+                        //E[i].used_net[j].second = E[i].used_net.size();
                         N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                             //ネットのコスト更新
+                }
 
         //全グループのコスト計算
         for(int i = 0; i < ng; ++i)
                 G[i].sum_cost(); //グループごとのTDMを計算
 
+        for(int j = 0; j < nw; ++j) {
+                long max = 0;
+                for (int k = 0; k < N[j].included_group.size(); k++) {
+                        if(max < G[N[j].included_group[k]].cost) max = G[N[j].included_group[k]].cost;
+                }
+                N[j].sum = max;
+        }
+
         for (int i = 0; i < ne; i++) {
 
-                for(int j = 0; j < E[i].used_net.size(); ++j)
-                        N[E[i].used_net[j].first].cost -= E[i].used_net[j].second;                       //ネットのコスト更新
+                //for(int j = 0; j < nw; ++j) N[j].cost = 0;
+
+                //for(int j = 0; j < ne; ++j)
+                //        for(int k = 0; k < E[j].used_net.size(); ++k)
+                //                N[E[j].used_net[k].first].cost += E[j].used_net[k].second;                                       //ネットのコスト更新
+
+                ////全グループのコスト計算
+                //for(int j = 0; j < ng; ++j)
+                //        G[j].sum_cost();         //グループごとのTDMを計算
+
+                //for(int j = 0; j < nw; ++j) {
+                //        long max = 0;
+                //        for (int k = 0; k < N[j].included_group.size(); k++) {
+                //                if(max < G[N[j].included_group[k]].cost) max = G[N[j].included_group[k]].cost;
+                //        }
+                //        N[j].sum = max;
+
+                //priority_queue<group, vector<group>, less<group> > q_group;
+                //for (int k = 0; k < N[j].included_group.size(); k++) {
+                //        q_group.push(G[N[j].included_group[k]]);
+                //}
+
+                //for (int k = 0; k < 1; k++) {
+                //        N[j].sum = G[N[j].included_group[k]].cost;
+                //        //N[j].sum = q_group.top().cost;
+                //        q_group.pop();
+                //}
 
                 long sum = 0;
                 for (int j = 0; j < E[i].used_net.size(); j++) {
-                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
-                                sum += G[N[E[i].used_net[j].first].included_group[k]].cost;
-                        }
+                        sum += N[E[i].used_net[j].first].sum;
                 }
 
                 for (int j = 0; j < E[i].used_net.size(); j++) {
-                        long sum_ = 0;
-                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
-                                sum_ += G[N[E[i].used_net[j].first].included_group[k]].cost << 1;
-                        }
+                        long sum_ = N[E[i].used_net[j].first].sum * 2;
                         E[i].used_net[j].second = (sum + (sum_ - 1)) / sum_;
                 }
 
-                for(int j = 0; j < E[i].used_net.size(); ++j)
-                        N[E[i].used_net[j].first].cost += E[i].used_net[j].second;                       //ネットのコスト更新
-
-                for(int j = 0; j < E[i].used_net.size(); ++j) {
-                        for (int k = 0; k < N[E[i].used_net[j].first].included_group.size(); k++) {
-                                G[N[E[i].used_net[j].first].included_group[k]].sum_cost();
-                        }
-                }
         }
 
         //解（枝、TDM）代入

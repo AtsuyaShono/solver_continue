@@ -9,6 +9,7 @@
 
 #include <sstream>
 #include <fstream>
+#include <limits.h>
 
 #include <time.h>
 
@@ -71,7 +72,9 @@ bool max; //スコアとなるグループに属している場合true
 int max_his; //過去何回かで何回以上最大グループに属している場合正の値
 bool max_once; //過去に一度でも最大グループになっていたらtrue
 
-net() : cost(0),max_his(1){
+long sum;
+
+net() : cost(0),max_his(1),sum(0){
 }
 
 void sum_cost();   //総コスト計算
@@ -93,8 +96,9 @@ int id;         //ネットグループid
 vector<int> net_id;         //ネットid
 
 long cost;   //グループの総TDM
+bool top;
 
-group() : cost(0){
+group() : cost(0),top(false){
 }
 
 void sum_cost();   //総コスト計算
@@ -134,7 +138,7 @@ vector<group> G; //ネットグループの集合
 float paramator = 1.0;
 float paramator_x = 1.0;
 
-unsigned int max_TDM = 0; //現在時点のスコア
+long max_TDM = 0; //現在時点のスコア
 unsigned int max_g = 0; //スコアとなっているグループ
 
 long targets = 0;
