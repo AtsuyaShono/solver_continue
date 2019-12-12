@@ -84,7 +84,7 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 /*関数*/
 ///////
 void fileload(char *inputfile){    //入力
-/*
+
         int size = 1024*1024;
         int data1, data2;    //読み取り変数
         char line[size];    //文字列記憶用
@@ -135,8 +135,8 @@ void fileload(char *inputfile){    //入力
                         N[data1].included_group.emplace_back(i);
                 }
         }
- */
 
+/*
         int data; //読み取り変数
         string line; //文字列記憶用
         int i,j;
@@ -197,6 +197,7 @@ void fileload(char *inputfile){    //入力
                         N[data].included_group.emplace_back(i);
                 }
         }
+ */
 }
 
 
@@ -227,6 +228,7 @@ void fileout(char *outputfile){ //出力
                 }
                 ofs << stream.str();
         }
+
 }
 
 void routing(){ //経路探索
@@ -373,8 +375,8 @@ void calc_TDM(){
                         }
 
                         for (int j = 0; j < E[i].used_net.size(); j++) {
-                                long sum_ = N[E[i].used_net[j].first].sum;
-                                E[i].used_net[j].second = (sum + (sum_ - 1)) / (sum_*2);
+                                long sum_ = N[E[i].used_net[j].first].sum * 2;
+                                E[i].used_net[j].second = (sum + (sum_ - 1)) / (sum_);
                         }
                 }
         }
