@@ -85,54 +85,58 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 ///////
 void fileload(char *inputfile){    //入力
 
-        /*
-           int size = 1024*1024;
-           int data1, data2; //読み取り変数
-           char line[size]; //文字列記憶用
-           int i;
 
-           FILE *fp = fopen(inputfile, "r");
+        int size = 1024*1024;
+        int data1, data2;    //読み取り変数
+        char line[size];    //文字列記憶用
+        int i;
 
-           fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
-           V.resize(nf);
-           E.resize(ne);
-           N.resize(nw);
-           G.resize(ng);
+        FILE *fp = fopen(inputfile, "r");
 
-           for(i = 0; i < ne; ++i) {
+        fscanf(fp, "%d %d %d %d", &nf, &ne, &nw, &ng);
+        V.resize(nf);
+        E.resize(ne);
+        N.resize(nw);
+        G.resize(ng);
+
+        for(i = 0; i < ne; ++i) {
                 E[i].id = i;
                 fscanf(fp, "%d %d\n", &data1, &data2);
                 E[i].node_id1 = data1;
                 E[i].node_id2 = data2;
-           }
+        }
 
-           for(i = 0; i < nw; ++i) {
+        for(i = 0; i < nw; ++i) {
                 N[i].id = i;
                 fgets(line, size, fp);
                 data1 = atoi(strtok(line, " "));
                 N[i].source_sig = data1;
                 while(1) {
-                        const char *str = strtok(NULL, " ");
+                        char *str;
+                        str = strtok(NULL, " ");
                         if(str == NULL) break;
                         data1 = atoi(str);
                         N[i].target_sig.emplace_back(data1);
                 }
-           }
+        }
 
-           for(i = 0; i < ng; ++i) {
+        for(i = 0; i < ng; ++i) {
                 G[i].id = i;
                 fgets(line, size, fp);
                 data1 = atoi(strtok(line, " "));
                 G[i].net_id.emplace_back(data1);
+                N[data1].included_group.emplace_back(i);
                 while(1) {
-                        const char *str = strtok(NULL, " ");
+                        char *str;
+                        str = strtok(NULL, " ");
                         if(str == NULL) break;
                         data1 = atoi(str);
                         G[i].net_id.emplace_back(data1);
+                        N[data1].included_group.emplace_back(i);
                 }
-           }
-         */
+        }
 
+/*
         int data; //読み取り変数
         string line; //文字列記憶用
         int i,j;
@@ -193,36 +197,37 @@ void fileload(char *inputfile){    //入力
                         N[data].included_group.emplace_back(i);
                 }
         }
+ */
 }
 
 
 void fileout(char *outputfile){ //出力
 
-        //char out[1024];
+        char out[1024];
 
-        //FILE *fp = fopen(outputfile, "w");
-
-        //for(i = 0; i < nw; ++i) {
-        //        sprintf(out, "%lu\n", N[i].T.size());
-        //        for(j = 0; j < N[i].T.size(); ++j) {
-        //                sprintf(out, "%s%d %ld\n", out, N[i].T[j].first, N[i].T[j].second);
-        //        }
-        //        fprintf(fp, "%s", out);
-        //}
-
-        string line;
-
-        ofstream ofs(outputfile);
-        ostringstream stream(line);
+        FILE *fp = fopen(outputfile, "w");
 
         for(int i = 0; i < nw; ++i) {
-                stream.str("");
-                stream << N[i].T.size() << endl;
+                sprintf(out, "%lu\n", N[i].T.size());
                 for(int j = 0; j < N[i].T.size(); ++j) {
-                        stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+                        sprintf(out, "%s%d %ld\n", out, N[i].T[j].first, N[i].T[j].second);
                 }
-                ofs << stream.str();
+                fprintf(fp, "%s", out);
         }
+
+        //string line;
+
+        //ofstream ofs(outputfile);
+        //ostringstream stream(line);
+
+        //for(int i = 0; i < nw; ++i) {
+        //        stream.str("");
+        //        stream << N[i].T.size() << endl;
+        //        for(int j = 0; j < N[i].T.size(); ++j) {
+        //                stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+        //        }
+        //        ofs << stream.str();
+        //}
 }
 
 void routing(){ //経路探索

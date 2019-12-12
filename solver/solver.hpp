@@ -1,17 +1,17 @@
-#include <iostream>
-#include <iomanip>
-#include <queue>
-#include <algorithm>
-#include <vector>
-#include <cmath>
-#include <string.h>
-#include <omp.h>
+#include <iostream> //for cout
+//#include <iomanip> //
+#include <queue> //for queue
+//#include <algorithm> //
+//#include <vector> //
+//#include <cmath> //
+//#include <string.h> //
+#include <omp.h> //for omp_set_num_threads
 
-#include <sstream>
-#include <fstream>
-#include <limits.h>
+#include <sstream> //for istringstream
+#include <fstream> //for ofsteram
+//#include <limits.h>
 
-#include <time.h>
+#include <time.h> //for clock
 
 using namespace std;
 
