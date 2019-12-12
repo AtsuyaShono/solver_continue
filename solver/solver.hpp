@@ -4,7 +4,7 @@
 //#include <algorithm> //
 //#include <vector> //
 //#include <cmath> //
-//#include <string.h> //
+#include <string.h> //for strtok
 #include <omp.h> //for omp_set_num_threads
 
 #include <sstream> //for istringstream
