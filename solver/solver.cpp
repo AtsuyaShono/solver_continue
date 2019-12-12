@@ -203,7 +203,7 @@ void fileload(char *inputfile){    //入力
 
 void fileout(char *outputfile){ //出力
 
-        char out[1024];
+        char out[1024*1024];
 
         FILE *fp = fopen(outputfile, "w");
 
