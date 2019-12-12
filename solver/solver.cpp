@@ -84,7 +84,7 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 /*関数*/
 ///////
 void fileload(char *inputfile){    //入力
-
+/*
         int size = 1024*1024;
         int data1, data2;    //読み取り変数
         char line[size];    //文字列記憶用
@@ -135,8 +135,8 @@ void fileload(char *inputfile){    //入力
                         N[data1].included_group.emplace_back(i);
                 }
         }
+ */
 
-/*
         int data; //読み取り変数
         string line; //文字列記憶用
         int i,j;
@@ -197,12 +197,11 @@ void fileload(char *inputfile){    //入力
                         N[data].included_group.emplace_back(i);
                 }
         }
- */
 }
 
 
 void fileout(char *outputfile){ //出力
-
+/*
         char out[1024*1024];
 
         FILE *fp = fopen(outputfile, "w");
@@ -214,20 +213,20 @@ void fileout(char *outputfile){ //出力
                 }
                 fprintf(fp, "%s", out);
         }
+ */
+        string line;
 
-        //string line;
+        ofstream ofs(outputfile);
+        ostringstream stream(line);
 
-        //ofstream ofs(outputfile);
-        //ostringstream stream(line);
-
-        //for(int i = 0; i < nw; ++i) {
-        //        stream.str("");
-        //        stream << N[i].T.size() << endl;
-        //        for(int j = 0; j < N[i].T.size(); ++j) {
-        //                stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
-        //        }
-        //        ofs << stream.str();
-        //}
+        for(int i = 0; i < nw; ++i) {
+                stream.str("");
+                stream << N[i].T.size() << endl;
+                for(int j = 0; j < N[i].T.size(); ++j) {
+                        stream << N[i].T[j].first << " " << N[i].T[j].second << endl;
+                }
+                ofs << stream.str();
+        }
 }
 
 void routing(){ //経路探索
