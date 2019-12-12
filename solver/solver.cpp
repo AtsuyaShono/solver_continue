@@ -85,10 +85,10 @@ int main(int argc, char **filename){  //実行コマンド　./a.out 入力フ�
 ///////
 void fileload(char *inputfile){    //入力
 
-
         int size = 1024*1024;
         int data1, data2;    //読み取り変数
         char line[size];    //文字列記憶用
+        char *str;
         int i;
 
         FILE *fp = fopen(inputfile, "r");
@@ -109,10 +109,10 @@ void fileload(char *inputfile){    //入力
         for(i = 0; i < nw; ++i) {
                 N[i].id = i;
                 fgets(line, size, fp);
-                data1 = atoi(strtok(line, " "));
+                str = strtok(line, " ");
+                data1 = atoi(str);
                 N[i].source_sig = data1;
                 while(1) {
-                        char *str;
                         str = strtok(NULL, " ");
                         if(str == NULL) break;
                         data1 = atoi(str);
@@ -123,11 +123,11 @@ void fileload(char *inputfile){    //入力
         for(i = 0; i < ng; ++i) {
                 G[i].id = i;
                 fgets(line, size, fp);
-                data1 = atoi(strtok(line, " "));
+                str = strtok(line, " ");
+                data1 = atoi(str);
                 G[i].net_id.emplace_back(data1);
                 N[data1].included_group.emplace_back(i);
                 while(1) {
-                        char *str;
                         str = strtok(NULL, " ");
                         if(str == NULL) break;
                         data1 = atoi(str);
