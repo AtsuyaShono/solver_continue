@@ -1,7 +1,7 @@
 #include <iostream> //for cout
 //#include <iomanip> //for setprecision
 #include <queue> //for queue
-//#include <algorithm> //
+#include <algorithm> //for sort
 //#include <vector> //
 //#include <cmath> //
 #include <string.h> //for strtok
@@ -82,9 +82,9 @@ void sum_forrestriction(); //TDM制約のために1/TDMをedge.sumにたす
 void max_flag(); //最大グループに属しているnetにフラグを立てる
 void unmax(); //フラグ初期化
 
-bool operator<(const net& a) const
+bool operator>(const net& a) const
 {
-        return priority < a.priority;
+        return priority > a.priority;
 }
 };
 

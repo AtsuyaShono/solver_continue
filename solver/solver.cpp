@@ -254,7 +254,7 @@ void routing(){ //経路探索
                 priority.emplace_back(N[i]); //優先順位順にキューにpushする
         }
 
-        sort(priority.begin(), priority.end());
+        sort(priority.begin(), priority.end(),greater<net>());
 
         //経路探索
         #pragma omp parallel for

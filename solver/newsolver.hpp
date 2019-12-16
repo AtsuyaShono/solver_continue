@@ -1,7 +1,7 @@
 #include <iostream> //for cout
 //#include <iomanip> //for setprecision
 #include <queue> //for queue
-//#include <algorithm> //
+#include <algorithm> //for sort
 //#include <vector> //
 //#include <cmath> //
 #include <string.h> //for strtok
@@ -56,9 +56,9 @@ net() : cost(0),max_g_cost(0),priority(0){
 
 void sum_cost();   //総コスト計算
 
-bool operator<(const net& a) const
+bool operator>(const net& a) const
 {
-        return priority < a.priority;
+        return priority > a.priority;
 }
 
 };
