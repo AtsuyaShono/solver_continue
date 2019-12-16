@@ -234,7 +234,8 @@ void fileout(char *outputfile){ //出力
 void routing(){ //経路探索
 
         int i,j;
-        priority_queue<net, vector<net>, less<net> > que; //キュー：降順
+        //priority_queue<net, vector<net>, less<net> > que; //キュー：降順
+        vector<net> priority;
 
         //ネットが使われているグループのネットの数順にネットをルーティングしていく
         //その優先順位決め
@@ -250,8 +251,10 @@ void routing(){ //経路探索
 
         for(i = 0; i < nw; ++i) {
                 N[i].priority += N[i].target_sig.size();
-                que.push(N[i]); //優先順位順にキューにpushする
+                priority.emplace_back(N[i]); //優先順位順にキューにpushする
         }
+
+        sort(priority.begin(), priority.end());
 
         //経路探索
         #pragma omp parallel for
@@ -263,11 +266,13 @@ void routing(){ //経路探索
                 vector<bool> penalty_cost(ne,1); //すでに通過済みの枝numなら0 :penalty_cost[num] = 0
 
                 //#pragma omp ordered
-                #pragma omp critical
-                {
-                        id = que.top().id;         //ルーティングするネットidを記憶
-                        que.pop();         //ルーティングしたネットidを削除
-                }
+                //#pragma omp critical
+                //{
+                //        id = que.top().id;         //ルーティングするネットidを記憶
+                //        que.pop();         //ルーティングしたネットidを削除
+                //}
+
+                id = priority[i].id;
 
                 included_sig[N[id].source_sig] = true; //送信元にフラグたて
                 for(int loop = 0; loop < N[id].target_sig.size(); ++loop) {
@@ -336,7 +341,6 @@ void calc_TDM(){
 
         for(int i = 0; i < nw; ++i) {
                 for(int j = 0; j < N[i].T.size(); ++j)
-                        //E[N[i].T[j].first].used_net.push_back({N[i].id,1});
                         E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost}); //使った枝にネットidを記憶させる
         }
 
