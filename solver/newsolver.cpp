@@ -176,8 +176,8 @@ void fileout(char *outputfile){ //出力
 
 void routing(){ //経路探索
 
-        vector<net> priority; //ネットをルーティングする順番
-        priority_queue<net, vector<net>, less<net> > que; //キュー：降順
+        //vector<net> priority; //ネットをルーティングする順番
+        priority_queue<net, vector<net>, less<net> > que;
 
         //ネットが使われているグループのネットの数順にネットをルーティングしていく
         //その優先順位決め
@@ -191,7 +191,7 @@ void routing(){ //経路探索
                 que.push(N[i]);
         }
 
-        sort(priority.begin(), priority.end(),greater<net>());
+        //sort(priority.begin(), priority.end(),greater<net>());
 
         //経路探索
         #pragma omp parallel for
@@ -268,8 +268,6 @@ void routing(){ //経路探索
                         for(int j = 0; j < N[id].T.size(); ++j)
                                 ++E[N[id].T[j].first].cost;         //コスト更新
                 }
-                //}
-
         }
 
 }

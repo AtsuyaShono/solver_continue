@@ -239,7 +239,7 @@ void routing(){ //経路探索
 
         //ネットが使われているグループのネットの数順にネットをルーティングしていく
         //その優先順位決め
-        for ( i = 0; i < ng; ++i)
+        for (i = 0; i < ng; ++i)
                 for ( j = 0; j < G[i].net_id.size(); ++j)
                         N[G[i].net_id[j]].priority += G[i].net_id.size();
 
