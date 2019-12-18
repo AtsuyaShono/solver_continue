@@ -234,8 +234,8 @@ void fileout(char *outputfile){ //出力
 void routing(){ //経路探索
 
         int i,j;
-        //priority_queue<net, vector<net>, less<net> > que; //キュー：降順
-        vector<net> priority;
+        priority_queue<net, vector<net>, less<net> > que; //キュー：降順
+        //vector<net> priority;
 
         //ネットが使われているグループのネットの数順にネットをルーティングしていく
         //その優先順位決め
@@ -250,11 +250,17 @@ void routing(){ //経路探索
         }
 
         for(i = 0; i < nw; ++i) {
-                N[i].priority += N[i].target_sig.size();
-                priority.emplace_back(N[i]); //優先順位順にキューにpushする
+                //N[i].priority += N[i].target_sig.size();
+                //priority.emplace_back(N[i]); //優先順位順にキューにpushする
+                que.push(N[i]);
         }
 
-        sort(priority.begin(), priority.end(),greater<net>());
+        //for(i = 0; i < nw; ++i) {
+        //        priority.emplace_back(que.top()); //優先順位順にキューにpushする
+        //        que.pop();
+        //}
+
+        //sort(priority.begin(), priority.end());
 
         //経路探索
         #pragma omp parallel for
@@ -265,14 +271,13 @@ void routing(){ //経路探索
                 vector<int> T; //解枝記憶
                 vector<bool> penalty_cost(ne,1); //すでに通過済みの枝numなら0 :penalty_cost[num] = 0
 
-                //#pragma omp ordered
-                //#pragma omp critical
-                //{
-                //        id = que.top().id;         //ルーティングするネットidを記憶
-                //        que.pop();         //ルーティングしたネットidを削除
-                //}
+                #pragma omp critical
+                {
+                        id = que.top().id; //ルーティングするネットidを記憶
+                        que.pop(); //ルーティングしたネットidを削除
+                }
 
-                id = priority[i].id;
+                //id = priority[nw - i].id;
 
                 included_sig[N[id].source_sig] = true; //送信元にフラグたて
                 for(int loop = 0; loop < N[id].target_sig.size(); ++loop) {
@@ -320,7 +325,7 @@ void routing(){ //経路探索
                         while(1) {
                                 included_sig[v] = true;         //信号を含むことになるノードにフラグを立てる
                                 if(v == N[id].source_sig || penalty_cost[route[v]] == 0) break;         //探索を始めた元のノードに戻ってくれば終了 //コストが0になっているところはすでに訪問済みなので終了
-                                else T.emplace_back(route[v]);         //解の枝を記憶
+                                else N[i].T.push_back({route[v],2});         //解の枝を記憶
                                 penalty_cost[route[v]] = 0; //もう使っているので次からコストは0
                                 if(E[route[v]].node_id1 != v) v = E[route[v]].node_id1;         //枝の接続先を記憶
                                 else v = E[route[v]].node_id2;         //枝の接続先を記憶
@@ -329,9 +334,9 @@ void routing(){ //経路探索
 
                 #pragma omp critical
                 {
-                        for(int loop = 0; loop < T.size(); ++loop) {
-                                N[id].T.push_back({T[loop], 2});         //解を代入
-                                ++E[T[loop]].cost; //コスト更新
+                        for(int loop = 0; loop < N[i].T.size(); ++loop) {
+                                //N[id].T.push_back({T[loop], 2});         //解を代入
+                                ++E[N[i].T[loop].first].cost; //コスト更新
                         }
                 }
         }

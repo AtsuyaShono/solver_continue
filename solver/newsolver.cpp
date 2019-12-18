@@ -196,8 +196,10 @@ void routing(){ //経路探索
         for(int i = 0; i < nw; ++i) {
                 const int id = priority[i].id; //ルーティングするネットid
                 vector<int> T; //解枝
-                unordered_map<int, bool> target; //送信先のノードならtrue
-                unordered_map<int, bool> includes;
+                //unordered_map<int, bool> target; //送信先のノードならtrue
+                vector<bool> target(nf);
+                //unordered_map<int, bool> includes;
+                vector<bool> includes(nf);
                 int v; //現在地点のノード番号
 
                 for(int j = 0; j < N[id].target_sig.size(); ++j)
@@ -205,7 +207,8 @@ void routing(){ //経路探索
 
                 for(int j = 0; j < N[id].target_sig.size(); ++j) {
                         vector<int> dis(nf,INF); //dis[行き先のノード] = 出発地点から行き先までのコスト
-                        unordered_map<int, int> route; //経路記憶 //キー:ノード 値:経路で使われる直近の枝
+                        //unordered_map<int, int> route; //経路記憶 //キー:ノード 値:経路で使われる直近の枝
+                        vector<int> route(nf); //経路記憶,node i までの最短経路で最後に使われたedgeid：route[i] = edgeid
                         priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > que; //キュー：昇順　//first:最短距離コスト　second:ノード番号
 
                         //初期化
