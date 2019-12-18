@@ -56,9 +56,9 @@ net() : cost(0),max_g_cost(0),priority(0){
 
 void sum_cost();   //総コスト計算
 
-bool operator>(const net& a) const
+bool operator<(const net& a) const
 {
-        return priority > a.priority;
+        return priority < a.priority;
 }
 
 };

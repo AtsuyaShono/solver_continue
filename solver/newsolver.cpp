@@ -177,6 +177,7 @@ void fileout(char *outputfile){ //出力
 void routing(){ //経路探索
 
         vector<net> priority; //ネットをルーティングする順番
+        priority_queue<net, vector<net>, less<net> > que; //キュー：降順
 
         //ネットが使われているグループのネットの数順にネットをルーティングしていく
         //その優先順位決め
@@ -185,8 +186,9 @@ void routing(){ //経路探索
                         N[G[i].net_id[j]].priority += G[i].net_id.size();
 
         for(int i = 0; i < nw; ++i) {
-                N[i].priority += N[i].target_sig.size();
-                priority.emplace_back(N[i]);                 //優先順位順にキューにpushする
+                //N[i].priority += N[i].target_sig.size();
+                //priority.emplace_back(N[i]);                 //優先順位順にキューにpushする
+                que.push(N[i]);
         }
 
         sort(priority.begin(), priority.end(),greater<net>());
@@ -194,7 +196,15 @@ void routing(){ //経路探索
         //経路探索
         #pragma omp parallel for
         for(int i = 0; i < nw; ++i) {
-                const int id = priority[i].id; //ルーティングするネットid
+                int id = 0;
+                //const int id = priority[i].id; //ルーティングするネットid
+
+                #pragma omp critical
+                {
+                        id = que.top().id; //ルーティングするネットidを記憶
+                        que.pop(); //ルーティングしたネットidを削除
+                }
+
                 vector<int> T; //解枝
                 //unordered_map<int, bool> target; //送信先のノードならtrue
                 vector<bool> target(nf);
