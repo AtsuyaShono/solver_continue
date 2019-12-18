@@ -1,5 +1,5 @@
 #include <iostream> //for cout
-//#include <iomanip> //for setprecision
+#include <iomanip> //for setprecision
 #include <queue> //for queue
 #include <algorithm> //for sort
 //#include <vector> //
@@ -7,7 +7,7 @@
 #include <string.h> //for strtok
 #include <sstream> //for istringstream
 #include <fstream> //for ofsteram
-#include <unordered_map> //
+//#include <unordered_map> //
 
 #include <omp.h> //for omp_set_num_threads
 #include <time.h> //for clock
@@ -29,6 +29,7 @@ int node_id2; //接続されているFPGAid
 
 vector<pair<int, long> > used_net; //枝を使ったネットid first:id second :cost
 long cost;
+double sum;
 
 edge() : cost(1){
 }
@@ -56,6 +57,8 @@ net() : cost(0),max_g_cost(0),priority(0){
 
 void sum_cost();   //総コスト計算
 
+void sum_forrestriction(); //TDM制約のために1/TDMをedge.sumにたす
+
 bool operator<(const net& a) const
 {
         return priority < a.priority;
@@ -77,6 +80,19 @@ group() : cost(0){
 
 void sum_cost();   //総コスト計算
 
+};
+
+class P {    //ダイクストラ計算用クラス
+
+public:
+int path;        //最短距離
+int node;        //ノード番号
+
+// ">" のオーバーロード pathを基準に大小比較を行う
+bool operator>(const P& a) const
+{
+        return path > a.path;
+}
 };
 
 ////////////////
@@ -109,6 +125,10 @@ void calc_TDM(); //配線したそれぞれのネットの解枝にTDM割り当�
 ////////////
 /*メンバ関数*/
 ////////////
+void net::sum_forrestriction(){ //制約判定のためのTDM逆数の総和
+        for(int i = 0; i < T.size(); ++i) E[T[i].first].sum += (double)1/T[i].second;
+}
+
 void net::sum_cost(){ //コスト計算
         cost = 0;
         for(int i = 0; i < T.size(); ++i) cost += T[i].second;
