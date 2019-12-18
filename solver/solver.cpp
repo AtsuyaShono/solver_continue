@@ -325,7 +325,7 @@ void routing(){ //経路探索
                         while(1) {
                                 included_sig[v] = true;         //信号を含むことになるノードにフラグを立てる
                                 if(v == N[id].source_sig || penalty_cost[route[v]] == 0) break;         //探索を始めた元のノードに戻ってくれば終了 //コストが0になっているところはすでに訪問済みなので終了
-                                else N[i].T.push_back({route[v],2});         //解の枝を記憶
+                                else T.emplace_back(route[v]);         //解の枝を記憶
                                 penalty_cost[route[v]] = 0; //もう使っているので次からコストは0
                                 if(E[route[v]].node_id1 != v) v = E[route[v]].node_id1;         //枝の接続先を記憶
                                 else v = E[route[v]].node_id2;         //枝の接続先を記憶
@@ -334,9 +334,9 @@ void routing(){ //経路探索
 
                 #pragma omp critical
                 {
-                        for(int loop = 0; loop < N[i].T.size(); ++loop) {
-                                //N[id].T.push_back({T[loop], 2});         //解を代入
-                                ++E[N[i].T[loop].first].cost; //コスト更新
+                        for(int loop = 0; loop < T.size(); ++loop) {
+                                N[id].T.push_back({T[loop], 2});         //解を代入
+                                ++E[T[loop]].cost; //コスト更新
                         }
                 }
         }
@@ -384,8 +384,8 @@ void calc_TDM(){
                         }
 
                         for (int j = 0; j < E[i].used_net.size(); j++) {
-                                long sum_ = N[E[i].used_net[j].first].sum * 2;
-                                E[i].used_net[j].second = (sum + (sum_ - 1)) / (sum_);
+                                long sum_ = N[E[i].used_net[j].first].sum;
+                                E[i].used_net[j].second = ((sum + (sum_ - 1)) / (sum_) + 1) * 0.5;
                         }
                 }
         }

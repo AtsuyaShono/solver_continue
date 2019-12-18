@@ -117,8 +117,8 @@ void fileload(char *inputfile){    //入力
                 E[i].id = i;
                 E[i].node_id1 = data1;
                 E[i].node_id2 = data2;
-                V[data1].emplace_back(E[i].id);
-                V[data2].emplace_back(E[i].id);
+                V[data1].emplace_back(E[i].id, data2);
+                V[data2].emplace_back(E[i].id, data1);
         }
 
         for(i = 0; i < nw; ++i) {
@@ -218,13 +218,14 @@ void routing(){ //経路探索
                 for(int j = 0; j < N[id].target_sig.size(); ++j) {
                         vector<int> dis(nf,INF); //dis[行き先のノード] = 出発地点から行き先までのコスト
                         //unordered_map<int, int> route; //経路記憶 //キー:ノード 値:経路で使われる直近の枝
-                        vector<int> route(nf); //経路記憶,node i までの最短経路で最後に使われたedgeid：route[i] = edgeid
+                        vector<pair<int, int> > route(nf); //経路記憶,node i までの最短経路で最後に使われたedgeid：route[i] = edgeid
                         priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > que; //キュー：昇順　//first:最短距離コスト　second:ノード番号
 
                         //初期化
                         dis[N[id].source_sig] = 0; //出発地点のコストは0
                         que.push({0, N[id].source_sig}); //キューに出発地点を追加
                         v = N[id].source_sig; //現在地点初期化
+                        includes[v] = true;
 
                         //探索
                         while(!que.empty()) { //キューが空になるまでループ
@@ -237,11 +238,12 @@ void routing(){ //経路探索
                                         int node = v;
                                         while(1) {
                                                 //T.emplace_back(route[node]); //解の枝を記憶
-                                                N[id].T.push_back({route[node], 2}); //解を代入
+                                                N[id].T.emplace_back(route[node].first, 2); //解を代入
                                                 includes[node] = true;
-                                                if(E[route[node]].node_id1 != node) node = E[route[node]].node_id1; //枝の接続先を記憶
-                                                else node = E[route[node]].node_id2; //枝の接続先を記憶
-                                                if(includes[node] == true || node == N[id].source_sig) break;
+                                                //if(E[route[node]].node_id1 != node) node = E[route[node]].node_id1; //枝の接続先を記憶
+                                                //else node = E[route[node]].node_id2; //枝の接続先を記憶
+                                                node = route[node].second;
+                                                if(includes[node] == true) break;
                                         }
                                         break;
                                 }
@@ -249,15 +251,16 @@ void routing(){ //経路探索
                                 if(dis[v] < p.first) continue; //startからvまでのコストが現在時点の最短距離より小さい場合スキップ（枝刈り）
 
                                 for(int k = 0; k < V[v].size(); ++k) { //vの枝を全て参照
-                                        const edge e = E[V[v][k]]; //vのk番目のedgeを記憶
-                                        int to; //記憶用接続先のnodeid
-                                        if(e.node_id1 == v) to = e.node_id2; //node_id1がvなら接続先はnode_id2
-                                        else to = e.node_id1; //node_id2がvなら接続先はnode_id1
+                                        const edge e = E[V[v][k].first]; //vのk番目のedgeを記憶
+                                        const int to = V[v][k].second;
+                                        //int to; //記憶用接続先のnodeid
+                                        //if(e.node_id1 == v) to = e.node_id2; //node_id1がvなら接続先はnode_id2
+                                        //else to = e.node_id1; //node_id2がvなら接続先はnode_id1
 
                                         if(dis[to] > dis[v] + e.cost * !includes[to]) { //現在の最短距離よりV[v][i]のエッジを使ったほうが短い時
                                                 dis[to] = dis[v] + e.cost * !includes[to]; //更新
                                                 que.push({dis[to], to}); //追加
-                                                route[to] = e.id; //toまでの経路で最後に使用したedge.idを格納
+                                                route[to] = {e.id, v}; //toまでの経路で最後に使用したedge.idを格納
                                         }
                                 }
                         }
@@ -276,7 +279,7 @@ void calc_TDM(){ //配線したそれぞれのネットの解枝にTDM割り当�
 
         for(int i = 0; i < nw; ++i)
                 for(int j = 0; j < N[i].T.size(); ++j)
-                        E[N[i].T[j].first].used_net.push_back({N[i].id,E[N[i].T[j].first].cost}); //使った枝にネットidを記憶させる
+                        E[N[i].T[j].first].used_net.emplace_back(N[i].id,E[N[i].T[j].first].cost); //使った枝にネットidを記憶させる
 
         #pragma omp parallel
         {
@@ -307,8 +310,8 @@ void calc_TDM(){ //配線したそれぞれのネットの解枝にTDM割り当�
                                 sum += N[E[i].used_net[j].first].max_g_cost;
 
                         for (int j = 0; j < E[i].used_net.size(); j++) {
-                                long sum_ = N[E[i].used_net[j].first].max_g_cost * 2;
-                                E[i].used_net[j].second = (sum + (sum_ - 1)) / (sum_);
+                                long sum_ = N[E[i].used_net[j].first].max_g_cost;
+                                E[i].used_net[j].second = ((sum + (sum_ - 1)) / (sum_) + 1) * 0.5;
                         }
                 }
         }
@@ -316,6 +319,6 @@ void calc_TDM(){ //配線したそれぞれのネットの解枝にTDM割り当�
         //解（枝、TDM）代入
         for(int i = 0; i < ne; ++i)
                 for(int j = 0; j < E[i].used_net.size(); ++j)
-                        N[E[i].used_net[j].first].T.push_back({E[i].id, 2*E[i].used_net[j].second});
+                        N[E[i].used_net[j].first].T.emplace_back(E[i].id, 2*E[i].used_net[j].second);
 
 }

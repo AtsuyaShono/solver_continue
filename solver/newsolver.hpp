@@ -87,7 +87,7 @@ int ne;  //FPGA接続数
 int nw;  //ネット数
 int ng;  //ネットグループ数
 
-vector<vector <int> > V; //ノードの集合
+vector<vector <pair<int, int> > > V; //ノードの集合
 vector<edge> E; //辺の集合
 vector<net> N; //ネットの集合
 vector<group> G; //ネットグループの集合
