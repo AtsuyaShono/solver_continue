@@ -192,21 +192,21 @@ void routing(){ //経路探索
         sort(priority.begin(), priority.end(),greater<net>());
 
         //経路探索
-        //#pragma omp parallel for
+        #pragma omp parallel for
         for(int i = 0; i < nw; ++i) {
                 const int id = priority[i].id; //ルーティングするネットid
                 vector<int> T; //解枝
-                vector<int> dis(nf,INF); //dis[行き先のノード] = 出発地点から行き先までのコスト
-                unordered_map<int, int> route; //経路記憶 //キー:ノード 値:経路で使われる直近の枝
                 unordered_map<int, bool> target; //送信先のノードならtrue
                 unordered_map<int, bool> includes;
-                priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > que; //キュー：昇順　//first:最短距離コスト　second:ノード番号
                 int v; //現在地点のノード番号
 
                 for(int j = 0; j < N[id].target_sig.size(); ++j)
                         target[N[id].target_sig[j]] = true; //送信先にフラグたて
 
                 for(int j = 0; j < N[id].target_sig.size(); ++j) {
+                        vector<int> dis(nf,INF); //dis[行き先のノード] = 出発地点から行き先までのコスト
+                        unordered_map<int, int> route; //経路記憶 //キー:ノード 値:経路で使われる直近の枝
+                        priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > que; //キュー：昇順　//first:最短距離コスト　second:ノード番号
 
                         //初期化
                         dis[N[id].source_sig] = 0; //出発地点のコストは0
@@ -223,7 +223,8 @@ void routing(){ //経路探索
                                         target[v] = false;
                                         int node = v;
                                         while(1) {
-                                                T.emplace_back(route[node]); //解の枝を記憶
+                                                //T.emplace_back(route[node]); //解の枝を記憶
+                                                N[id].T.push_back({route[node], 2}); //解を代入
                                                 includes[node] = true;
                                                 if(E[route[node]].node_id1 != node) node = E[route[node]].node_id1; //枝の接続先を記憶
                                                 else node = E[route[node]].node_id2; //枝の接続先を記憶
@@ -251,10 +252,8 @@ void routing(){ //経路探索
 
                 #pragma omp critical
                 {
-                        for(int j = 0; j < T.size(); ++j) {
-                                N[id].T.push_back({T[j], 2});         //解を代入
-                                ++E[T[j]].cost;         //コスト更新
-                        }
+                        for(int j = 0; j < N[id].T.size(); ++j)
+                                ++E[N[id].T[j].first].cost;         //コスト更新
                 }
                 //}
 
